@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -83,19 +84,17 @@
         font-size: 20px;
       }
       p {
-        margin: 0 0 12px;
+        margin: 0 0 10px;
         color: var(--muted);
       }
       ul {
         margin: 0 0 14px 18px;
-        padding: 0;
       }
       li {
         margin-bottom: 6px;
       }
       pre {
         margin: 0;
-        overflow: auto;
       }
       pre[class*="language-"] {
         background: transparent !important;
@@ -103,19 +102,6 @@
       code[class*="language-"] {
         font-size: 13px;
         line-height: 1.55;
-      }
-      footer {
-        margin-top: 20px;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .hint kbd {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 11px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid var(--panel-border);
-        padding: 2px 6px;
-        border-radius: 8px;
       }
     </style>
   </head>
@@ -125,7 +111,7 @@
       <header>
         <h1>QUIRKI — Language Summary</h1>
         <p class="subtitle">
-          A concise reference for QUIRKI’s syntax, semantics, and design philosophy.
+          A single-page reference for QUIRKI’s syntax and design rules.
         </p>
       </header>
 
@@ -138,13 +124,13 @@
         <div class="content">
           <ul>
             <li>Memory-safe, data-oriented language</li>
-            <li>No classes — only data</li>
-            <li>No return values; functions mutate state</li>
+            <li>No classes</li>
+            <li>No return values — functions mutate data</li>
             <li>Variable names define types</li>
-            <li>Control flow is <strong>only</strong> pattern matching</li>
-            <li>No special control types (everything is data)</li>
+            <li>Control flow is only pattern matching</li>
+            <li>Everything is data</li>
             <li>Enums are tagged unions</li>
-            <li>Explicit, readable, exhaustively handled logic</li>
+            <li>Logic is explicit and exhaustively handled</li>
           </ul>
         </div>
       </section>
@@ -156,12 +142,12 @@
           <span class="section-title">Functions</span>
         </div>
         <div class="content">
-          <h2>Mutating Functions</h2>
+          <h2>Mutating calls</h2>
           <ul>
-            <li>Functions do not return values</li>
-            <li>All effects are expressed through mutation</li>
+            <li>Functions never return values</li>
+            <li>All effects happen through mutation</li>
             <li>Parameters are readonly by default</li>
-            <li>Ownership is explicit via <code>take</code></li>
+            <li><code>take</code> explicitly transfers ownership</li>
           </ul>
 
           <pre><code class="language-quirki">
@@ -184,11 +170,11 @@ hero GrabItem(take item)
           <span class="section-title">Variables & Naming</span>
         </div>
         <div class="content">
-          <h2>Names Define Types</h2>
+          <h2>Name-driven types</h2>
           <ul>
-            <li>Variable prefixes encode type information</li>
-            <li>No explicit type annotations required</li>
-            <li>Struct fields are declared by name only</li>
+            <li>Type is inferred from the variable name</li>
+            <li>No explicit type annotations</li>
+            <li>Struct fields are declared by identifier only</li>
           </ul>
 
           <pre><code class="language-quirki">
@@ -207,14 +193,14 @@ Struct Hero:
           <span class="section-title">Enums</span>
         </div>
         <div class="content">
-          <h2>Tagged Unions</h2>
+          <h2>Tagged unions</h2>
           <ul>
-            <li>Enum cases may carry values</li>
-            <li>No separate union or optional types</li>
+            <li>Enum cases may carry data</li>
+            <li>No separate optional or union types</li>
           </ul>
 
           <pre><code class="language-quirki">
-=== &lt;T&gt;? ===
+=== <T>? ===
     some(T)
     none
 
@@ -234,12 +220,11 @@ Enum AIState
           <span class="section-title">Control Flow</span>
         </div>
         <div class="content">
-          <h2>Pattern Matching Only</h2>
+          <h2>Pattern matching</h2>
           <ul>
             <li><code>?</code> is the only control-flow construct</li>
             <li>Matches on data, not conditions</li>
             <li>Exhaustive by default</li>
-            <li><code>else</code> opt-out is explicit</li>
           </ul>
 
           <pre><code class="language-quirki">
@@ -261,11 +246,10 @@ Enum AIState
           <span class="section-title">Anonymous Match</span>
         </div>
         <div class="content">
-          <h2>Temporary Match Values (<code>#</code>)</h2>
+          <h2>Temporary match values</h2>
           <ul>
-            <li><code>#</code> introduces an anonymous match value</li>
-            <li>Useful when the value does not need a name</li>
-            <li>Booleans are enums with syntax sugar</li>
+            <li><code>#</code> introduces an unnamed match value</li>
+            <li>Useful when the value does not need a binding</li>
           </ul>
 
           <pre><code class="language-quirki">
@@ -288,10 +272,10 @@ Enum AIState
           <span class="section-title">Errors</span>
         </div>
         <div class="content">
-          <h2>Errors Are Data</h2>
+          <h2>Errors are data</h2>
           <ul>
             <li>No exceptions</li>
-            <li>No <code>Result&lt;T, E&gt;</code> type</li>
+            <li>No Result or error channel</li>
             <li>Errors are domain-specific enums</li>
           </ul>
 
@@ -306,10 +290,6 @@ Enum AIState
           </code></pre>
         </div>
       </section>
-
-      <footer class="hint">
-        Tip: use <kbd>Ctrl</kbd>+<kbd>F</kbd> / <kbd>⌘</kbd>+<kbd>F</kbd> to search the page.
-      </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
