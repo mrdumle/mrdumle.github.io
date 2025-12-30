@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QUIRKI — Language Summary</title>
+
+    <!-- Prism (theme) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css"
+    />
+
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0f14;
+        --panel: rgba(255, 255, 255, 0.04);
+        --panel-border: rgba(255, 255, 255, 0.08);
+        --text: rgba(255, 255, 255, 0.88);
+        --muted: rgba(255, 255, 255, 0.6);
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+          Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: radial-gradient(1200px 700px at 30% -10%, #1b2a44 0%, transparent 55%),
+          radial-gradient(900px 600px at 90% 0%, #2b1747 0%, transparent 50%),
+          var(--bg);
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 40px 18px 56px;
+      }
+      header {
+        margin-bottom: 18px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(28px, 4vw, 40px);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--panel-border);
+        background: rgba(0, 0, 0, 0.2);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.72);
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #7c3aed;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+      }
+      .actions button {
+        appearance: none;
+        border: 1px solid var(--panel-border);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.82);
+        padding: 8px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .actions button:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      pre {
+        margin: 0;
+        overflow: auto;
+      }
+      /* Prism tweaks */
+      pre[class*="language-"] {
+        background: transparent !important;
+      }
+      code[class*="language-"] {
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      footer {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .hint kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+          "Courier New", monospace;
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--panel-border);
+        padding: 2px 6px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>QUIRKI — Language Summary</h1>
+        <p class="subtitle">A single-page reference with custom syntax highlighting.</p>
+      </header>
+
+      <section id="functions" class="card">
+  <div class="toolbar">
+    <div class="pill" title="Core language construct">
+      <span class="dot"></span>
+      <span><strong>Functions</strong></span>
+    </div>
+  </div>
+
+  <div style="padding:16px 18px 18px">
+    <h2 style="margin:0 0 6px;font-size:18px">Functions</h2>
+    <p class="subtitle" style="margin-bottom:14px">
+      Functions in QUIRKI never return values. They operate by mutating data directly.
+    </p>
+
+    <pre><code class="language-quirki">
+// Functions mutate data instead of returning values
+hero TakeDamage(i_amount)
+hero Move(f3_dir)
+
+// Alternative multiline style
+hero
+TakeDamage(i_amount)
+Move(f3_dir)
+
+// Parameters are readonly by default
+hero GrabItem(take item)
+    </code></pre>
+  </div>
+</section>
+
+      <footer class="hint">
+        Tip: press <kbd>Ctrl</kbd>+<kbd>F</kbd> / <kbd>⌘</kbd>+<kbd>F</kbd> to search within the page.
+      </footer>
+    </div>
+
+    <!-- Prism core -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <!-- Custom Prism language: quirki -->
+    <script>
+      // Minimal, readable tokenization tailored to QUIRKI snippets.
+      Prism.languages.quirki = {
+        comment: /\/\/[^\n]*/,
+
+        // Headline-ish separators like "=== X ===" or "----------------"
+        separator: {
+          pattern: /^(?:={3,}.*={3,}|-{3,}|={5,})$/m,
+          alias: "important",
+        },
+
+        // Special control / match syntax
+        punctuation: /[()?:|.,]/,
+        operator: /[<>]=?|==|!=|=|#|:/,
+
+        // Keywords & "builtins"
+        keyword: /\b(?:Struct|Enum|else|take|some|none|success|error)\b/,
+
+        // Types: Capitalized identifiers (Entity, Int, AIState) + generic-ish <T>
+        "class-name": [
+          /\b[A-Z][A-Za-z0-9_]*\b/,
+          /&lt;[A-Za-z0-9_]+\s*\?*&gt;/,
+        ],
+
+        // Variable-name-sets-type convention prefixes
+        // i_health, f_speed, f3_dir, etc.
+        builtin: /\b(?:i|f|f2|f3|b|s)_[A-Za-z0-9_]+\b/,
+
+        // Numbers
+        number: /\b\d+(?:\.\d+)?\b/,
+
+        // Function-ish / call-ish identifiers (words before "(" OR after a dot)
+        function: [
+          /\b[A-Za-z_][A-Za-z0-9_]*(?=\s*\()/,
+          /(?<=\.)[A-Za-z_][A-Za-z0-9_]*/,
+        ],
+      };
+
+      Prism.highlightAll();
+
+      // Copy button
+      const btn = document.getElementById("copyBtn");
+      const codeEl = document.getElementById("quirkiCode");
+      btn.addEventListener("click", async () => {
+        try {
+          // Convert the HTML-escaped bits back to plain text for clipboard.
+          const txt = codeEl.textContent;
+          await navigator.clipboard.writeText(txt);
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = "Copy code"), 900);
+        } catch (e) {
+          btn.textContent = "Copy failed";
+          setTimeout(() => (btn.textContent = "Copy code"), 1200);
+        }
+      });
+    </script>
+  </body>
+</html>
