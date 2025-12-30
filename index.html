@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>QUIRKI — Language Summary</title>
 
-    <!-- Prism (theme) -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css"
@@ -19,11 +18,12 @@
         --panel-border: rgba(255, 255, 255, 0.08);
         --text: rgba(255, 255, 255, 0.88);
         --muted: rgba(255, 255, 255, 0.6);
+        --accent: #7c3aed;
       }
       body {
         margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-          Helvetica, Arial;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+          Arial;
         background: radial-gradient(1200px 700px at 30% -10%, #1b2a44 0%, transparent 55%),
           radial-gradient(900px 600px at 90% 0%, #2b1747 0%, transparent 50%),
           var(--bg);
@@ -35,18 +35,16 @@
         padding: 40px 18px 56px;
       }
       header {
-        margin-bottom: 24px;
+        margin-bottom: 28px;
       }
       h1 {
         margin: 0 0 8px;
-        font-size: clamp(28px, 4vw, 40px);
+        font-size: clamp(30px, 4vw, 42px);
         letter-spacing: -0.02em;
-        line-height: 1.1;
       }
       .subtitle {
-        margin: 0;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 15px;
       }
       .card {
         background: var(--panel);
@@ -60,30 +58,40 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 12px 14px;
+        padding: 12px 16px;
         border-bottom: 1px solid var(--panel-border);
-        background: rgba(0, 0, 0, 0.2);
-      }
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.75);
+        background: rgba(0, 0, 0, 0.25);
       }
       .dot {
         width: 8px;
         height: 8px;
         border-radius: 999px;
-        background: #7c3aed;
+        background: var(--accent);
         box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
       }
+      .section-title {
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.75);
+      }
       .content {
-        padding: 16px 18px 18px;
+        padding: 18px;
       }
       h2 {
-        margin: 0 0 6px;
-        font-size: 18px;
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      p {
+        margin: 0 0 12px;
+        color: var(--muted);
+      }
+      ul {
+        margin: 0 0 14px 18px;
+        padding: 0;
+      }
+      li {
+        margin-bottom: 6px;
       }
       pre {
         margin: 0;
@@ -97,7 +105,7 @@
         line-height: 1.55;
       }
       footer {
-        margin-top: 18px;
+        margin-top: 20px;
         color: var(--muted);
         font-size: 12px;
       }
@@ -117,49 +125,52 @@
       <header>
         <h1>QUIRKI — Language Summary</h1>
         <p class="subtitle">
-          A concise, single-page reference for QUIRKI’s core syntax and philosophy.
+          A concise reference for QUIRKI’s syntax, semantics, and design philosophy.
         </p>
       </header>
 
       <!-- CORE PHILOSOPHY -->
       <section class="card">
         <div class="toolbar">
-          <div class="pill"><span class="dot"></span><strong>Core Philosophy</strong></div>
+          <span class="dot"></span>
+          <span class="section-title">Core Philosophy</span>
         </div>
         <div class="content">
-          <pre><code class="language-quirki">
-// Memory-safe, data-oriented language
-// No classes.
-// No return values — functions mutate data
-// Variable names set types.
-// Control flow is ONLY pattern matching
-// Everything is data; no special control types
-// Enums ARE tagged unions
-// Explicit, readable, exhaustively handled logic
-          </code></pre>
+          <ul>
+            <li>Memory-safe, data-oriented language</li>
+            <li>No classes — only data</li>
+            <li>No return values; functions mutate state</li>
+            <li>Variable names define types</li>
+            <li>Control flow is <strong>only</strong> pattern matching</li>
+            <li>No special control types (everything is data)</li>
+            <li>Enums are tagged unions</li>
+            <li>Explicit, readable, exhaustively handled logic</li>
+          </ul>
         </div>
       </section>
 
       <!-- FUNCTIONS -->
       <section class="card">
         <div class="toolbar">
-          <div class="pill"><span class="dot"></span><strong>Functions</strong></div>
+          <span class="dot"></span>
+          <span class="section-title">Functions</span>
         </div>
         <div class="content">
-          <pre><code class="language-quirki">
-// Functions do not return values.
-// They always mutate data.
+          <h2>Mutating Functions</h2>
+          <ul>
+            <li>Functions do not return values</li>
+            <li>All effects are expressed through mutation</li>
+            <li>Parameters are readonly by default</li>
+            <li>Ownership is explicit via <code>take</code></li>
+          </ul>
 
+          <pre><code class="language-quirki">
 hero TakeDamage(i_amount)
 hero Move(f3_dir)
 
-// Alternative multiline form
 hero
 TakeDamage(i_amount)
 Move(f3_dir)
-
-// Parameters are readonly by default
-// Use `take` to claim ownership
 
 hero GrabItem(take item)
           </code></pre>
@@ -169,12 +180,18 @@ hero GrabItem(take item)
       <!-- VARIABLES -->
       <section class="card">
         <div class="toolbar">
-          <div class="pill"><span class="dot"></span><strong>Variables & Naming</strong></div>
+          <span class="dot"></span>
+          <span class="section-title">Variables & Naming</span>
         </div>
         <div class="content">
-          <pre><code class="language-quirki">
-// Variable names define types
+          <h2>Names Define Types</h2>
+          <ul>
+            <li>Variable prefixes encode type information</li>
+            <li>No explicit type annotations required</li>
+            <li>Struct fields are declared by name only</li>
+          </ul>
 
+          <pre><code class="language-quirki">
 Struct Hero:
    entity
    weapon
@@ -186,9 +203,16 @@ Struct Hero:
       <!-- ENUMS -->
       <section class="card">
         <div class="toolbar">
-          <div class="pill"><span class="dot"></span><strong>Enums</strong></div>
+          <span class="dot"></span>
+          <span class="section-title">Enums</span>
         </div>
         <div class="content">
+          <h2>Tagged Unions</h2>
+          <ul>
+            <li>Enum cases may carry values</li>
+            <li>No separate union or optional types</li>
+          </ul>
+
           <pre><code class="language-quirki">
 === &lt;T&gt;? ===
     some(T)
@@ -199,12 +223,6 @@ Enum AIState
     Patrol(f3_dir)
     Attack(entity)
     Flee(f3_dir, f_speed)
-
-Enum FireWeapon
-    success
-    no_ammo
-    jammed
-    overheated
           </code></pre>
         </div>
       </section>
@@ -212,17 +230,22 @@ Enum FireWeapon
       <!-- CONTROL FLOW -->
       <section class="card">
         <div class="toolbar">
-          <div class="pill"><span class="dot"></span><strong>Control Flow</strong></div>
+          <span class="dot"></span>
+          <span class="section-title">Control Flow</span>
         </div>
         <div class="content">
-          <pre><code class="language-quirki">
-// ? is the only control-flow construct
+          <h2>Pattern Matching Only</h2>
+          <ul>
+            <li><code>?</code> is the only control-flow construct</li>
+            <li>Matches on data, not conditions</li>
+            <li>Exhaustive by default</li>
+            <li><code>else</code> opt-out is explicit</li>
+          </ul>
 
+          <pre><code class="language-quirki">
 ? hero.ai_state
 | Idle: hero Rest()
 | Patrol(dir): hero Move(dir)
-
-// Optional unwrapping
 
 ? hero.target
 | some(entity): hero Shoot(entity)
@@ -234,9 +257,17 @@ Enum FireWeapon
       <!-- ANONYMOUS MATCH -->
       <section class="card">
         <div class="toolbar">
-          <div class="pill"><span class="dot"></span><strong>Anonymous Match (#)</strong></div>
+          <span class="dot"></span>
+          <span class="section-title">Anonymous Match</span>
         </div>
         <div class="content">
+          <h2>Temporary Match Values (<code>#</code>)</h2>
+          <ul>
+            <li><code>#</code> introduces an anonymous match value</li>
+            <li>Useful when the value does not need a name</li>
+            <li>Booleans are enums with syntax sugar</li>
+          </ul>
+
           <pre><code class="language-quirki">
 ?: # GetTotalAmmo(hero)
 | # > 0: hero Shoot()
@@ -253,9 +284,17 @@ Enum FireWeapon
       <!-- ERRORS -->
       <section class="card">
         <div class="toolbar">
-          <div class="pill"><span class="dot"></span><strong>Errors</strong></div>
+          <span class="dot"></span>
+          <span class="section-title">Errors</span>
         </div>
         <div class="content">
+          <h2>Errors Are Data</h2>
+          <ul>
+            <li>No exceptions</li>
+            <li>No <code>Result&lt;T, E&gt;</code> type</li>
+            <li>Errors are domain-specific enums</li>
+          </ul>
+
           <pre><code class="language-quirki">
 === LoadAsset ===
     success(asset)
@@ -269,22 +308,16 @@ Enum FireWeapon
       </section>
 
       <footer class="hint">
-        Tip: press <kbd>Ctrl</kbd>+<kbd>F</kbd> / <kbd>⌘</kbd>+<kbd>F</kbd> to search this page.
+        Tip: use <kbd>Ctrl</kbd>+<kbd>F</kbd> / <kbd>⌘</kbd>+<kbd>F</kbd> to search the page.
       </footer>
     </div>
 
-    <!-- Prism core -->
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
 
-    <!-- Custom Prism language -->
     <script>
       Prism.languages.quirki = {
         comment: /\/\/[^\n]*/,
-        separator: {
-          pattern: /^(?:={3,}.*={3,}|-{3,}|={5,})$/m,
-          alias: "important",
-        },
         punctuation: /[()?:|.,]/,
         operator: /[<>]=?|==|!=|=|#|:/,
         keyword: /\b(?:Struct|Enum|else|take|some|none|success|error)\b/,
