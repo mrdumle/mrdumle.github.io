@@ -104,10 +104,11 @@
       }
       pre[class*="language-"] {
         background: transparent !important;
+        line-height: 100%;
       }
       code[class*="language-"] {
-        font-size: 13px;
-        line-height: 1.55;
+        font-size: 14px;
+        
       }
     </style>
   </head>
@@ -136,7 +137,8 @@
 // Mutating parameters come first, followed by function 
 // and readonly parameters.
 
-new hero
+new hero // Data is zero initialized on creation.
+
 hero TakeDamage(i_amount)
 hero Move(f3_dir)
       
@@ -172,7 +174,8 @@ Struct Hero:
 PushDamage(hero: mut &Hero, transform:Transform, weapon:Weapon, amount: Int)
 
 // We can see how types are really just written twice in a lot of places.
-</code></pre></br></br></br>
+</code></pre>
+</br></br></br>
 
 Now lets look at Quirki's version.</br>
 <pre class="card"><code class="language-quirki">Struct Hero: 
@@ -180,13 +183,14 @@ Now lets look at Quirki's version.</br>
 
 hero PushDamage(weapon, transform, i_amount)
 </code></pre>
-
+</br>
+</br>
 </br>
 It's obvious when you are mixing types.
 <pre class="card"><code class="language-quirki">i_health -= f_damage 
 </code></pre>
 
-
+</br>
 </br>
 </br>
 </br>
