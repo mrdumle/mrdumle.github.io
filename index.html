@@ -162,30 +162,21 @@ The language is strongly typed, but types are never explicitly declared. </br>
 Quirki infers types from variable names using type names as prefixes. </br>
 You are encouraged to use the type name as the variable name. </br>
 </br>
-Here's how <i><b>other</b></i> similar languages does this:</br>
-<pre class="card"><code class="language-quirki">// Other languages:
-Struct Hero:
-  transform : Transform
-  weapon : Weapon
-  secondWeapon : Weapon
-  health : Int
-  isAlive : Bool
+Here's how <i><b>other</b></i> similar languages defines a function:</br>
+<pre class="card"><code class="language-quirki">
+fn PushDamage(hero: mut &Hero, transform:&Transform, weapon:Weapon, amount: Int)
 
-PushDamage(hero: mut &Hero, transform:Transform, weapon:Weapon, amount: Int)
-
-// We can see how types are really just written twice in a lot of places.
 </code></pre>
-</br></br></br>
+</br></br>
 
 Now lets look at Quirki's version.</br>
-<pre class="card"><code class="language-quirki">Struct Hero: 
-  transform, weapon, weapon_second, i_health, is_alive
+<pre class="card"><code class="language-quirki">
+fn hero PushDamage(weapon, transform, i_amount)
 
-hero PushDamage(weapon, transform, i_amount)
 </code></pre>
 </br>
 </br>
-</br>
+
 It's obvious when you are mixing types.
 <pre class="card"><code class="language-quirki">i_health -= f_damage 
 </code></pre>
@@ -236,8 +227,8 @@ It is exhaustive by default. </br>
 | else: pass // use else to catch-all
     
 // Unwrapping optional works the same way:
-? hero.target?
-| some(entity): hero Shoot(entity)
+? hero.enemy_target?
+| some(enemy): hero Shoot(enemy)
 | none: hero Search()
 
 // Error handling with enums
