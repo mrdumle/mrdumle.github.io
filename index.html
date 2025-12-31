@@ -18,17 +18,18 @@
         --panel: rgba(255, 255, 255, 0.04);
         --panel-border: rgba(255, 255, 255, 0.08);
         --text: rgba(255, 255, 255, 0.88);
-        --muted: rgba(255, 255, 255, 0.6);
+        --muted: rgba(255, 255, 255, 0.63);
         --accent: #7c3aed;
       }
       body {
+        line-height: 150%;
         margin: 0;
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
           Arial;
         background: radial-gradient(1200px 700px at 30% -10%, #1b2a44 0%, transparent 55%),
           radial-gradient(900px 600px at 90% 0%, #2b1747 0%, transparent 50%),
           var(--bg);
-        color: var(--text);
+        color: var(--muted);
       }
       .wrap {
         max-width: 980px;
@@ -37,11 +38,14 @@
       }
       header {
         margin-bottom: 28px;
+        color: var(--text);
       }
       h1 {
         margin: 0 0 8px;
         font-size: clamp(30px, 4vw, 42px);
         letter-spacing: -0.02em;
+        color: var(--text);
+        
       }
       .subtitle {
         color: var(--muted);
@@ -77,18 +81,20 @@
         color: rgba(255, 255, 255, 0.75);
       }
       .content {
-        padding: 18px;
+        padding: 0px;
+        margin-top: 0px;
       }
       h2 {
         margin: 0 0 8px;
         font-size: 20px;
+        color: var(--text);
       }
       p {
         margin: 0 0 10px;
         color: var(--muted);
       }
       ul {
-        margin: 0 0 14px 18px;
+        margin: 0 0 0px px;
       }
       li {
         margin-bottom: 6px;
@@ -108,187 +114,146 @@
 
   <body>
     <div class="wrap">
-      <header>
-        <h1>QUIRKI — Language Summary</h1>
-        <p class="subtitle">
-          A single-page reference for QUIRKI’s syntax and design rules.
-        </p>
-      </header>
+      <h1>QUIRKI</h1>
+      An experimental programming language. </br>
+      It is fast, memory-safe and data-oriented. </br>
+      It's very opinionated,
+      and very quirki. </br>
+    <br />
+    <br />
 
-      <!-- CORE PHILOSOPHY -->
-      <section class="card">
-        <div class="toolbar">
-          <span class="dot"></span>
-          <span class="section-title">Core Philosophy</span>
-        </div>
-        <div class="content">
-          <ul>
-            <li>Memory-safe, data-oriented language</li>
-            <li>No classes</li>
-            <li>No return values — functions mutate data</li>
-            <li>Variable names define types</li>
-            <li>Control flow is only pattern matching</li>
-            <li>Everything is data</li>
-            <li>Enums are tagged unions</li>
-            <li>Logic is explicit and exhaustively handled</li>
-          </ul>
-        </div>
-      </section>
+    <h2>
+    Functions and ownership
+    </h2>
+    
+    Unlike most languages, Quirki does not allow functions to return values. </br>
+    Instead, functions mutate data. Ownership becomes clear. </br>
+    And it's dead simple to reason about code.
+    </br></br>
+    
+    <pre class="card"><code class="language-quirki">
+// Instead of using keywords, Quirki uses positional syntax.
+// Mutating parameters come first, followed by function 
+// and readonly parameters.
 
-      <!-- FUNCTIONS -->
-      <section class="card">
-        <div class="toolbar">
-          <span class="dot"></span>
-          <span class="section-title">Functions</span>
-        </div>
-        <div class="content">
-          <h2>Mutating calls</h2>
-          <ul>
-            <li>Functions never return values</li>
-            <li>All effects happen through mutation</li>
-            <li>Parameters are readonly by default</li>
-            <li><code>take</code> explicitly transfers ownership</li>
-          </ul>
-
-          <pre><code class="language-quirki">
 hero TakeDamage(i_amount)
 hero Move(f3_dir)
-
+      
+// Can also be written with pipeline syntax:
 hero
-TakeDamage(i_amount)
-Move(f3_dir)
+| TakeDamage(i_amount)
+| Move(f3_dir)
 
+// You can also take ownership with keyword: take
 hero GrabItem(take item)
-          </code></pre>
-        </div>
-      </section>
+</code></pre>
+  
+</br>
+</br>
 
-      <!-- VARIABLES -->
-      <section class="card">
-        <div class="toolbar">
-          <span class="dot"></span>
-          <span class="section-title">Variables & Naming</span>
-        </div>
-        <div class="content">
-          <h2>Name-driven types</h2>
-          <ul>
-            <li>Type is inferred from the variable name</li>
-            <li>No explicit type annotations</li>
-            <li>Struct fields are declared by identifier only</li>
-          </ul>
 
-          <pre><code class="language-quirki">
+<h2>
+VARIABLES & NAMES
+</h2>
+The language is strongly typed, but types are never explicitly declared. </br>
+Quirki infers types from variable names using type names as prefixes. </br>
+You are encouraged to use the type name as the variable name. </br>
+</br>
+Here's how <i><b>other</b></i> similar languages does this:</br>
+<pre class="card"><code class="language-quirki">// Other languages:
 Struct Hero:
-   entity
-   weapon
-   i_health
-          </code></pre>
-        </div>
-      </section>
+  transform : Transform
+  weapon : Weapon
+  secondWeapon : Weapon
+  health : Int
+  isAlive : Bool
 
-      <!-- ENUMS -->
-      <section class="card">
-        <div class="toolbar">
-          <span class="dot"></span>
-          <span class="section-title">Enums</span>
-        </div>
-        <div class="content">
-          <h2>Tagged unions</h2>
-          <ul>
-            <li>Enum cases may carry data</li>
-            <li>No separate optional or union types</li>
-          </ul>
+PushDamage(hero: mut &Hero, transform:Transform, weapon:Weapon, amount: Int)
 
-          <pre><code class="language-quirki">
-=== <T>? ===
-    some(T)
-    none
+// We can see how types are really just written twice in a lot of places.
+</code></pre></br></br></br>
 
-Enum AIState
+Now lets look at Quirki's version:</br>
+<pre class="card"><code class="language-quirki">Struct Hero:
+   transform, i_health, is_alive,
+   weapon, weapon_second
+
+hero PushDamage(weapon, transform, i_amount)
+</code></pre>
+
+</br>
+</br>
+</br>
+
+
+<h2>
+Enums
+</h2>
+Enums are used heavily in Quirki.
+<pre class="card"><code class="language-quirki">Enum FireWeapon // simple enum
+    success
+    no_ammo
+    jammed
+    overheated
+
+
+Enum AIState // enum with data
     Idle
     Patrol(f3_dir)
     Attack(entity)
     Flee(f3_dir, f_speed)
-          </code></pre>
-        </div>
-      </section>
 
-      <!-- CONTROL FLOW -->
-      <section class="card">
-        <div class="toolbar">
-          <span class="dot"></span>
-          <span class="section-title">Control Flow</span>
-        </div>
-        <div class="content">
-          <h2>Pattern matching</h2>
-          <ul>
-            <li><code>?</code> is the only control-flow construct</li>
-            <li>Matches on data, not conditions</li>
-            <li>Exhaustive by default</li>
-          </ul>
 
-          <pre><code class="language-quirki">
+Enum LoadedAsset // error handling
+    Success(asset)
+    Error(string)
+
+</code></pre>
+</br></br>
+<h2>
+  Branching & Pattern Matching
+</h2>
+
+There's only one control-flow method: "<b> ? </b>"  </br>
+So there's no: IF or SWITCH, TRY etc. </br> </br>
+
+" ? " simply pattern-matches on data. </br>
+It is exhaustive by default. </br>
+
+<pre class="card"><code class="language-quirki">
 ? hero.ai_state
 | Idle: hero Rest()
 | Patrol(dir): hero Move(dir)
-
-? hero.target
+| else: pass // use else to catch-all
+    
+// Unwrapping optional works the same way:
+? hero.target?
 | some(entity): hero Shoot(entity)
 | none: hero Search()
-          </code></pre>
-        </div>
-      </section>
 
-      <!-- ANONYMOUS MATCH -->
-      <section class="card">
-        <div class="toolbar">
-          <span class="dot"></span>
-          <span class="section-title">Anonymous Match</span>
-        </div>
-        <div class="content">
-          <h2>Temporary match values</h2>
-          <ul>
-            <li><code>#</code> introduces an unnamed match value</li>
-            <li>Useful when the value does not need a binding</li>
-          </ul>
+// Error handling with enums
+? result LoadTexture(path)
+| Success(asset): loadedAssets(take asset)
+| Error(msg): log Write(msg)
 
-          <pre><code class="language-quirki">
-?: # GetTotalAmmo(hero)
+
+// You can introduces a temporary value to match on using: #
+
+? # GetTotalAmmo(hero)
 | # > 0: hero Shoot()
 | else: hero Reload()
+
+// Boolean is an enum with some syntax sugar.
+// so you dont have to write out "| true:"
 
 ? has_ammo CheckAmmo(hero)
     hero Shoot()
 | else:
     hero Reload()
+
+
           </code></pre>
-        </div>
-      </section>
 
-      <!-- ERRORS -->
-      <section class="card">
-        <div class="toolbar">
-          <span class="dot"></span>
-          <span class="section-title">Errors</span>
-        </div>
-        <div class="content">
-          <h2>Errors are data</h2>
-          <ul>
-            <li>No exceptions</li>
-            <li>No Result or error channel</li>
-            <li>Errors are domain-specific enums</li>
-          </ul>
-
-          <pre><code class="language-quirki">
-=== LoadAsset ===
-    success(asset)
-    error(string)
-
-? result LoadTexture(path)
-| success(asset): loadedAssets(take asset)
-| error(msg): log Write(msg)
-          </code></pre>
-        </div>
       </section>
     </div>
 
@@ -297,13 +262,14 @@ Enum AIState
 
     <script>
       Prism.languages.quirki = {
-        comment: /\/\/[^\n]*/,
-        punctuation: /[()?:|.,]/,
-        operator: /[<>]=?|==|!=|=|#|:/,
-        keyword: /\b(?:Struct|Enum|else|take|some|none|success|error)\b/,
+        comment: /\/\/[^\n]*/ ,
+        punctuation: /[():|.,]/,
+        keyword: /\b(?:Struct|Enum|else|take)\b/,
         "class-name": /\b[A-Z][A-Za-z0-9_]*\b/,
+        keyword: /\|/,
         builtin: /\b(?:i|f|f2|f3|b|s)_[A-Za-z0-9_]+\b/,
         number: /\b\d+(?:\.\d+)?\b/,
+        keyword: /[\?#]/,
         function: [
           /\b[A-Za-z_][A-Za-z0-9_]*(?=\s*\()/,
           /(?<=\.)[A-Za-z_][A-Za-z0-9_]*/,
