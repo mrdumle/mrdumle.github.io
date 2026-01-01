@@ -208,8 +208,14 @@ Enum AIState: // enum with data
 
 
 Enum LoadedAsset: // error handling
-    Success(asset)
-    Error(string)
+    Success(asset) 
+    ! NotFound // <- Enums may declare failure variants.
+    ! PermissionDenied // <- More on this failure later.
+
+// ( Enums with failure variants must have
+// a single payload type for all successes.
+// This makes nice unwrapping possible. )
+
 
 </code></pre>
 </br></br>
@@ -234,17 +240,23 @@ It is exhaustive by default. </br>
 | some(enemy): hero Shoot(enemy)
 | none: hero Search()
 
-// Error handling with enums
-? result LoadTexture(path)
-| Success(asset): loadedAssets(take asset)
-| Error(msg): log Write(msg)
-
-
 // You can introduces a temporary value to match on using: #
-
 ? # GetTotalAmmo(hero)
 | # > 0: hero Shoot()
 | else: hero Reload()
+
+// Error handling with enums
+? LoadTexture(path)
+| Success(asset):   loadedAssets(take asset)
+| NotFound:         Log("Texture not found")
+| PermissionDenied: Log("Permission denied")
+
+// If our enum has failure variants, as shown before,
+// Using ! unwraps success and propagates failure automatically.
+! texture LoadTexture(path)
+
+// And since optionals are just enums with a failure variant. They work the same.
+! enemy hero.enemy_target?
 
 // Boolean is an enum with some syntax sugar.
 // so you dont have to write out "| true:"
