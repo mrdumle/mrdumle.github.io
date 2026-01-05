@@ -212,9 +212,9 @@ Enum LoadedAsset: // error handling
     ! NotFound // <- Enums may declare failure variants.
     ! PermissionDenied // <- More on this failure later.
 
-// ( Enums with failure variants must have
+// Enums with failure variants must have
 // a single payload type for all successes.
-// This makes nice unwrapping possible. )
+// This allows easier unwrapping.
 
 
 </code></pre>

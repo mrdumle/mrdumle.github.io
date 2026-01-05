@@ -1,0 +1,205 @@
+// ===============================
+// QUIRKI — LANGUAGE SUMMARY
+
+
+// ----------------
+// FUNCTIONS
+// ----------------
+// • Functions do not return values.
+// • They always mutate some data.
+
+hero TakeDamage(i_amount)
+hero Move(f3_dir)
+
+hero // piped
+| TakeDamage(i_amount)
+| Move(f3_dir)
+
+
+hero GrabItem(take item) // take is a keyword for ownership.
+
+
+// ----------------
+// VARIABLES & NAMES
+// ----------------
+// • names set type. the type name is used as prefix. 
+
+
+//------------ NOT THIS ---------------
+fn PushDamage(hero: mut &Hero, transform:&Transform, weapon:Weapon, amount: Int)
+Struct Hero:
+   entity : Entity
+   weapon : Weapon
+   health : Int
+
+
+// -----------  INSTEAD WE DO THIS:   
+=== Hero <- PushDamage(weapon, transform, i_amount)
+
+=== Hero:
+   entity 
+   weapon  
+   i_health
+
+
+
+// -----------  Parametric Polymorphism is possible too
+var item_list // list of items.
+
+
+// for complicated types, combining 3 types or more, it is legal 
+// to use the prefix _ to signal that type is not in name.
+var _adresses : person_f2_map 
+
+
+// Or you can make a type alias
+=== Alias Adresses : person_f2_map 
+
+
+// Default type aliases:
+=== Alias is     : b
+=== Alias has    : b
+
+
+
+
+// ----------------
+// ENUMS 
+// ----------------
+// • Enum cases may carry values
+
+=== Enum AIState 
+    Idle
+    Patrol(f3_dir)
+    Attack(entity)
+    Flee(f3_dir, f_speed)
+
+
+=== Enum FireWeapon 
+    success
+    noAmmo
+    jammed
+    overheated
+
+
+
+// enums can carry error variants marked with !, which enables ! unwrapping.
+=== Enum Optional<T>
+    !None,
+    Some(T)
+
+=== Enum LoadResult
+    !Error, Success(asset)
+
+
+=== LoadResult <- LoadAsset(path)
+    
+    // ! here means: if error, exit now with default !Error
+    ! asset LoadAsset(path) 
+
+    // or you can exit with any specified enum variant.  
+    ! asset LoadAsset(path) : AboveResultEnum.AssetFailLoad
+
+
+// You can create ananymous enums when defining functions
+=== ! or Success(asset) <- LoadAsset(path)
+
+
+// ! is also short hand for the default "!Error", in enum definitions.
+
+
+// Rule: Enums with error variants must only use one payload type for the success variants.
+// otherwise the ! unwrap would not have a clear type.
+
+
+// ----------------
+// CONTROL FLOW ?
+// ----------------
+// • `?` is the ONLY control-flow construct.
+// • It pattern-matches on data
+// • Exhaustive by default unless `else` is used
+// • No if / switch / try / catch
+// • cases begin with |
+
+? hero.ai_state
+| Idle: hero Rest()
+| Patrol(dir): hero Move(dir)
+    
+// Optional unwrapping looks similar
+
+? hero.target
+| some(entity): hero Shoot(entity)
+| none: hero Search()
+
+
+// # introduces a temporary value to match on
+// when you don’t want to name it.
+
+? # GetTotalAmmo(hero)
+| # > 0: hero Shoot()
+| else: hero Reload()
+
+
+// Boolean is an enum with some syntax sugar.
+// so you dont have to write out "| true:"
+
+? _ CheckAmmo(hero)
+    hero Shoot()
+| else:
+    hero Reload()
+
+! asset LoadAsset(path) 
+
+
+
+
+
+
+
+// ----------------
+// INITIALIZATION
+// ----------------
+// Adding the keyword init will make it a contructor.
+// it creates a value by mutation and the compiler will force:
+// 1. All fields must be set
+// 2. No field may be read before set
+=== hero <- Init (data)
+    hero.entity = data.entity
+    hero.weapon = data.weapon
+    hero.i_health = data.health
+
+=== hero <- Init fromHealth(data, i_health)
+    hero.entity = data.entity
+    hero.weapon = data.weapon
+    hero.i_health = i_health
+
+=== Example
+    new weapon
+    use(weapon) // <- Compiler Error: not initialized
+
+    //-----------------------------------------
+
+    new weapon init(path)
+    use(weapon)  // <- OK
+
+    //-----------------------------------------
+
+    new weapon
+
+    ? hero.class
+    | Warrior: 
+        weapon Init(sword_data)
+    | Archer:
+        weapon Init(bow_data)
+
+    hero Equip(weapon) // OK
+
+
+
+    // --------------------------------
+    
+
+    
+    
+
+
