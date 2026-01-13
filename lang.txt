@@ -1,64 +1,50 @@
 // ===============================
 // QUIRKI — LANGUAGE SUMMARY
 
-
-// ----------------
 // FUNCTIONS
 // ----------------
-// • Functions do not return values.
-// • They always mutate some data.
+// Functions do not return values.
+// They mutate data.
 
-hero TakeDamage(i_amount)
-hero Move(f3_dir)
-
-hero // piped
-| TakeDamage(i_amount)
-| Move(f3_dir)
-
-
-hero GrabItem(take item) // take is a keyword for ownership.
-
-
-// ----------------
-// VARIABLES & NAMES
-// ----------------
-// • names set type. the type name is used as prefix. 
-
-
-//------------ NOT THIS ---------------
-fn PushDamage(hero: mut &Hero, transform:&Transform, weapon:Weapon, amount: Int)
-Struct Hero:
-   entity : Entity
-   weapon : Weapon
-   health : Int
-
-
-// -----------  INSTEAD WE DO THIS:   
-=== Hero <- PushDamage(weapon, transform, i_amount)
-
-=== Hero:
-   entity 
-   weapon  
-   i_health
+// <- Variables on the left are mutated. 
+// -> Variables on the right are read only
+// (similar to x = y where x is the changed value.)
 
 
 
-// -----------  Parametric Polymorphism is possible too
-var item_list // list of items.
+hero TakeDamage(amount) 
+hero Move(dir)
 
 
-// for complicated types, combining 3 types or more, it is legal 
-// to use the prefix _ to signal that type is not in name.
-var _adresses : person_f2_map 
+
+// "Take" is a keyword for taking ownership.
+hero GrabItem(take item)  
 
 
-// Or you can make a type alias
-=== Alias Adresses : person_f2_map 
+// namespace
+... Entity ...
 
 
-// Default type aliases:
-=== Alias is     : b
-=== Alias has    : b
+    // Defining Struct
+    === Hero ===
+        entity : Entity
+        weapon : Weapon
+        health : Int
+        armorClass : Int
+
+
+
+
+    // Defining functions:
+    === hero:Hero === TakeDamage( amount: Int, take weapon: Weapon, piercing:Bool) 
+
+
+// You can also leave out types if they have the same lowercase name as the type,
+// or use prefixes for int (i_), float (f_), bool (is_/ has_/ should_)
+
+    === Hero === TakeDamage(i_amount, weapon, is_piercing) 
+        hero.health -= i_amount * weapon.multiplier
+    
 
 
 
@@ -66,16 +52,8 @@ var _adresses : person_f2_map
 // ----------------
 // ENUMS 
 // ----------------
-// • Enum cases may carry values
 
-=== Enum AIState 
-    Idle
-    Patrol(f3_dir)
-    Attack(entity)
-    Flee(f3_dir, f_speed)
-
-
-=== Enum FireWeapon 
+--- FireWeapon ---
     success
     noAmmo
     jammed
@@ -83,16 +61,29 @@ var _adresses : person_f2_map
 
 
 
+// • Enum cases may carry values
+--- AIState ---
+    Idle
+    Patrol(f3_dir)
+    Attack(entity)
+    Flee(f3_dir, f_speed)
+
+
+
 // enums can carry error variants marked with !, which enables ! unwrapping.
-=== Enum Optional<T>
+--- Optional<T> ---
     !None,
     Some(T)
 
-=== Enum LoadResult
+
+
+--- LoadResult ---
     !Error, Success(asset)
 
 
-=== LoadResult <- LoadAsset(path)
+
+
+=== LoadResult === LoadAsset(path)
     
     // ! here means: if error, exit now with default !Error
     ! asset LoadAsset(path) 
@@ -101,11 +92,17 @@ var _adresses : person_f2_map
     ! asset LoadAsset(path) : AboveResultEnum.AssetFailLoad
 
 
+
+
 // You can create ananymous enums when defining functions
-=== ! or Success(asset) <- LoadAsset(path)
+
+=== ! or Success(asset) === LoadAsset(path) 
 
 
-// ! is also short hand for the default "!Error", in enum definitions.
+
+
+
+// ! is also short hand for the default " !Error ", in enum definitions.
 
 
 // Rule: Enums with error variants must only use one payload type for the success variants.
@@ -133,7 +130,7 @@ var _adresses : person_f2_map
 
 
 // # introduces a temporary value to match on
-// when you don’t want to name it.
+// when you dont want to name it.
 
 ? # GetTotalAmmo(hero)
 | # > 0: hero Shoot()
