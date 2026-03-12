@@ -197,7 +197,7 @@ button.danger {
 }
 
 #noteTitleInput {
-  flex: 0 0 160px;
+  flex: 0 0 60px;
   min-width: 120px;
 }
 
@@ -205,8 +205,14 @@ button.danger {
   flex: 1 1 auto;
   min-width: 160px;
   resize: none;
-  overflow: auto;
+  overflow: hidden;
   min-height: 42px;
+}
+
+#noteInput::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .note-controls-row {
@@ -226,7 +232,7 @@ button.danger {
 
 .start-date-controls {
   display: grid;
-  grid-template-columns: 28px 68px 28px;
+  grid-template-columns: 28px 48px 28px;
   align-items: center;
   column-gap: 8px;
   flex: 0 0 auto;
@@ -235,7 +241,7 @@ button.danger {
 #startDateValue {
   display: block;
   width: 100%;
-  min-width: 68px;
+  min-width: 48px;
   text-align: center;
   color: #e9f1ff;
   font-size: 13px;
@@ -253,14 +259,14 @@ button.danger {
 
 .duration-controls {
   display: grid;
-  grid-template-columns: 28px 68px 28px;
+  grid-template-columns: 28px 48px 28px;
   align-items: center;
   column-gap: 8px;
   flex: 0 0 auto;
 }
 
 #durationValue {
-  min-width: 68px;
+  min-width: 48px;
   text-align: center;
   color: #e9f1ff;
   font-size: 13px;
