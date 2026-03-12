@@ -305,7 +305,7 @@ button.danger {
   right: 0;
   top: 12px;
   height: 4px;
-  background: var(--line);
+  background: rgba(255, 212, 71, 0.5);
   border-radius: 4px;
 }
 

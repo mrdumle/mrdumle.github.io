@@ -9,6 +9,7 @@ const CAPSULE_GAP_FROM_AXIS = 40;
 const CAPSULE_MIN_WIDTH = 50;
 const AXIS_VERTICAL_OFFSET = 5;
 const CAPSULE_EDGE_EXTRA = 6;
+const CREATE_DRAG_THRESHOLD_PX = 15;
 const STORAGE_KEY = "vacation_timeline_entries_v1";
 
 const state = {
@@ -385,14 +386,27 @@ function onDotPointerDown(event) {
   const target = event.currentTarget;
   const index = Number(target.dataset.index);
 
-  state.drag = { startIndex: index, currentIndex: index, pointerId: event.pointerId, created: false };
+  state.drag = {
+    startIndex: index,
+    currentIndex: index,
+    pointerId: event.pointerId,
+    startClientX: event.clientX,
+    activated: false,
+    created: false,
+  };
   target.setPointerCapture(event.pointerId);
-  highlightSelection();
-  renderSelectionCapsule();
 }
 
-function updateDragIndexFromClientX(clientX) {
+function updateDragIndexFromClientX(clientX, allowActivate = true) {
   if (!state.drag) return;
+  if (!state.drag.activated && allowActivate) {
+    const distancePx = Math.abs(clientX - state.drag.startClientX);
+    if (distancePx >= CREATE_DRAG_THRESHOLD_PX) {
+      state.drag.activated = true;
+    }
+  }
+  if (!state.drag.activated) return;
+
   const rowRect = dotsRow.getBoundingClientRect();
   const relativeX = clientX - rowRect.left;
   const rawIndex = Math.round((relativeX - LEFT_PADDING) / SPACING);
@@ -404,8 +418,12 @@ function updateDragIndexFromClientX(clientX) {
 
 function onDotPointerUp(event) {
   if (!state.drag || state.drag.pointerId !== event.pointerId || state.drag.created) return;
-  state.drag.created = true;
   updateDragIndexFromClientX(event.clientX);
+  if (!state.drag.activated) {
+    clearDrag();
+    return;
+  }
+  state.drag.created = true;
   createEntryFromDrag();
   clearDrag();
 }
@@ -473,8 +491,12 @@ function setupGlobalPointerHandling() {
 
   window.addEventListener("pointerup", (event) => {
     if (state.drag && state.drag.pointerId === event.pointerId && !state.drag.created) {
-      state.drag.created = true;
       updateDragIndexFromClientX(event.clientX);
+      if (!state.drag.activated) {
+        clearDrag();
+        return;
+      }
+      state.drag.created = true;
       createEntryFromDrag();
       clearDrag();
     }
