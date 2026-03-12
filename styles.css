@@ -118,7 +118,7 @@ button.danger {
   border: 1px solid var(--border);
   background: var(--panel);
   border-radius: 16px;
-  padding: 18px;
+  padding: 0px 18px 18px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -156,13 +156,13 @@ button.danger {
   border-radius: 12px;
   background: rgba(6, 20, 44, 0.72);
   backdrop-filter: blur(3px);
-  padding: 10px;
+  padding: 7px;
   display: flex;
   flex-direction: column;
 }
 
 .note-panel-wrap {
-  margin-top: 14px;
+  margin-top: 4px;
   display: flex;
   justify-content: center;
 }
@@ -201,6 +201,7 @@ button.danger {
   flex: 1 1 0;
   min-width: 72px;
   max-width: 250px;
+  max-height: 36px;
 }
 
 #noteInput {
