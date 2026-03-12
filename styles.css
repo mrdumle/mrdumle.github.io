@@ -179,6 +179,7 @@ button.danger {
   color: #e9f1ff;
   padding: 8px;
   font: inherit;
+  font-size: 80%;
 }
 
 .note-top-row {
@@ -197,12 +198,13 @@ button.danger {
 }
 
 #noteTitleInput {
-  flex: 0 0 60px;
-  min-width: 120px;
+  flex: 1 1 0;
+  min-width: 72px;
+  max-width: 250px;
 }
 
 #noteInput {
-  flex: 1 1 auto;
+  flex: 2 1 0;
   min-width: 160px;
   resize: none;
   overflow: hidden;
@@ -228,6 +230,11 @@ button.danger {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 0;
+}
+
+#deleteSelectedBtn {
+  margin-left: auto;
+  padding: 4px 12px;
 }
 
 .start-date-controls {

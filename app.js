@@ -533,6 +533,8 @@ function clearAll() {
 
 function deleteSelectedEntry() {
   if (!state.selectedEntryId) return;
+  const shouldDelete = window.confirm("Delete selected capsule?");
+  if (!shouldDelete) return;
   state.entries = state.entries.filter((item) => item.id !== state.selectedEntryId);
   state.selectedEntryId = null;
   saveState();
