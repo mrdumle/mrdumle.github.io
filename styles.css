@@ -34,7 +34,7 @@ body {
 
 .topbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: stretch;
   gap: 16px;
   flex-wrap: wrap;
@@ -172,8 +172,7 @@ button.danger {
 }
 
 .note-panel {
-  width: 360px;
-  max-width: 500px;
+  width: min(100%, 980px);
   border: 1px solid rgba(173, 199, 255, 0.35);
   border-radius: 12px;
   background: rgba(6, 20, 44, 0.72);
@@ -183,13 +182,18 @@ button.danger {
   flex-direction: column;
 }
 
+.note-panel-wrap {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
 .top-note-panel {
-  flex: 1 1 420px;
+  flex: 1 1 auto;
 }
 
 #noteTitleInput,
 #noteInput {
-  width: 100%;
   border: 1px solid rgba(176, 204, 255, 0.3);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
@@ -198,23 +202,29 @@ button.danger {
   font: inherit;
 }
 
+.note-top-row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
 #noteTitleInput {
-  margin-bottom: 8px;
+  flex: 0 0 160px;
 }
 
 #noteInput {
+  flex: 1 1 auto;
   resize: none;
-  overflow: hidden;
-  min-height: 110px;
+  overflow: auto;
+  min-height: 42px;
 }
 
 .note-controls-row {
   margin-top: 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
-  flex-wrap: wrap;
 }
 
 .color-picker {
@@ -227,10 +237,9 @@ button.danger {
 .duration-controls {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 8px;
-  margin-top: 0;
-  margin-left: auto;
+  flex: 0 0 auto;
 }
 
 #durationValue {
@@ -446,6 +455,23 @@ button.danger {
     margin-left: 0;
     text-align: left;
     width: 100%;
+  }
+
+  .note-panel {
+    width: 100%;
+  }
+
+  .note-top-row {
+    flex-wrap: wrap;
+  }
+
+  #noteTitleInput {
+    flex: 1 1 100%;
+  }
+
+  #noteInput {
+    flex: 1 1 100%;
+    min-height: 80px;
   }
 
   .top-note-panel {

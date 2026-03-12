@@ -13,27 +13,6 @@
           <h1>Vacation Planner</h1>
           <p>March 11, 2026 to April 30, 2026</p>
         </div>
-        <section class="note-panel top-note-panel" id="notePanel" aria-live="polite">
-          <input id="noteTitleInput" type="text" placeholder="Select a capsule title..." />
-          <textarea id="noteInput" rows="4" placeholder="Select a capsule note..."></textarea>
-          <div class="note-controls-row">
-            <div class="color-picker" id="colorPicker" aria-label="Capsule color picker">
-              <button type="button" class="color-swatch" data-color="#ef4444" aria-label="Red"></button>
-              <button type="button" class="color-swatch" data-color="#f97316" aria-label="Orange"></button>
-              <button type="button" class="color-swatch" data-color="#eab308" aria-label="Yellow"></button>
-              <button type="button" class="color-swatch" data-color="#22c55e" aria-label="Green"></button>
-              <button type="button" class="color-swatch" data-color="#14b8a6" aria-label="Teal"></button>
-              <button type="button" class="color-swatch" data-color="#3b82f6" aria-label="Blue"></button>
-              <button type="button" class="color-swatch" data-color="#8b5cf6" aria-label="Violet"></button>
-              <button type="button" class="color-swatch" data-color="#ec4899" aria-label="Pink"></button>
-            </div>
-            <div class="duration-controls" id="durationControls" aria-label="Capsule duration">
-              <button type="button" id="durationMinusBtn" aria-label="Remove one day">-</button>
-              <span id="durationValue">0 days</span>
-              <button type="button" id="durationPlusBtn" aria-label="Add one day">+</button>
-            </div>
-          </div>
-        </section>
       </header>
 
       <section class="timeline-frame">
@@ -46,6 +25,31 @@
               <div class="axis-line" id="axisLine"></div>
               <div class="dots-row" id="dotsRow"></div>
               <div class="labels-row" id="labelsRow"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+      <section class="note-panel-wrap">
+        <section class="note-panel top-note-panel" id="notePanel" aria-live="polite">
+          <div class="note-top-row">
+            <input id="noteTitleInput" type="text" placeholder="Select a capsule title..." />
+            <textarea id="noteInput" rows="2" placeholder="Select a capsule note..."></textarea>
+            <div class="duration-controls" id="durationControls" aria-label="Capsule duration">
+              <button type="button" id="durationMinusBtn" aria-label="Remove one day">-</button>
+              <span id="durationValue">0 days</span>
+              <button type="button" id="durationPlusBtn" aria-label="Add one day">+</button>
+            </div>
+          </div>
+          <div class="note-controls-row">
+            <div class="color-picker" id="colorPicker" aria-label="Capsule color picker">
+              <button type="button" class="color-swatch" data-color="#ef4444" aria-label="Red"></button>
+              <button type="button" class="color-swatch" data-color="#f97316" aria-label="Orange"></button>
+              <button type="button" class="color-swatch" data-color="#eab308" aria-label="Yellow"></button>
+              <button type="button" class="color-swatch" data-color="#22c55e" aria-label="Green"></button>
+              <button type="button" class="color-swatch" data-color="#14b8a6" aria-label="Teal"></button>
+              <button type="button" class="color-swatch" data-color="#3b82f6" aria-label="Blue"></button>
+              <button type="button" class="color-swatch" data-color="#8b5cf6" aria-label="Violet"></button>
+              <button type="button" class="color-swatch" data-color="#ec4899" aria-label="Pink"></button>
             </div>
           </div>
         </section>
