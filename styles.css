@@ -26,7 +26,7 @@ body {
 .app {
   width: 100%;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px 10px 10px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -103,7 +103,7 @@ button.danger {
 }
 
 .timeline-frame {
-  margin-top: 20px;
+  margin-top: 0;
   position: relative;
   flex: 0 0 auto;
 }
@@ -185,14 +185,17 @@ button.danger {
   display: flex;
   align-items: stretch;
   gap: 10px;
+  flex-wrap: nowrap;
 }
 
 #noteTitleInput {
   flex: 0 0 160px;
+  min-width: 120px;
 }
 
 #noteInput {
   flex: 1 1 auto;
+  min-width: 160px;
   resize: none;
   overflow: auto;
   min-height: 42px;
@@ -219,6 +222,7 @@ button.danger {
   justify-content: center;
   gap: 8px;
   flex: 0 0 auto;
+  min-width: 110px;
 }
 
 #durationValue {
@@ -432,19 +436,7 @@ button.danger {
 @media (max-width: 720px) {
   .note-panel {
     width: 100%;
-  }
-
-  .note-top-row {
-    flex-wrap: wrap;
-  }
-
-  #noteTitleInput {
-    flex: 1 1 100%;
-  }
-
-  #noteInput {
-    flex: 1 1 100%;
-    min-height: 80px;
+    overflow-x: auto;
   }
 
   .top-note-panel {
