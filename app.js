@@ -308,7 +308,7 @@ function renderSelectionCapsule() {
 function renderEntries() {
   allocateLanes(state.entries);
   capsulesLayer.innerHTML = "";
-  const baseAxisTop = Math.max(120, 50 + state.laneCount * (CAPSULE_HEIGHT + LANE_GAP));
+  const baseAxisTop = Math.max(60, 25 + state.laneCount * (CAPSULE_HEIGHT + LANE_GAP));
   const dynamicAxisTop = baseAxisTop + AXIS_VERTICAL_OFFSET;
   timelineAxis.style.top = `${dynamicAxisTop}px`;
 
@@ -347,8 +347,8 @@ function renderEntries() {
     capsulesLayer.appendChild(capsule);
   }
 
-  const minHeight = dynamicAxisTop + 70;
-  timelineBoard.style.minHeight = `${Math.max(200, minHeight)}px`;
+  const minHeight = dynamicAxisTop + 35;
+  timelineBoard.style.minHeight = `${Math.max(100, minHeight)}px`;
   capsulesLayer.style.height = `${timelineBoard.offsetHeight}px`;
   selectionLayer.style.height = `${timelineBoard.offsetHeight}px`;
   syncSelectionUI();
