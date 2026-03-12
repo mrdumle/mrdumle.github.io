@@ -27,10 +27,17 @@
           <div class="note-top-row">
             <input id="noteTitleInput" type="text" placeholder="Title" />
             <textarea id="noteInput" rows="2" placeholder="Notes"></textarea>
-            <div class="duration-controls" id="durationControls" aria-label="Capsule duration">
-              <button type="button" id="durationMinusBtn" aria-label="Remove one day">-</button>
-              <span id="durationValue">0 days</span>
-              <button type="button" id="durationPlusBtn" aria-label="Add one day">+</button>
+            <div class="right-controls">
+              <div class="duration-controls" id="durationControls" aria-label="Capsule duration">
+                <button type="button" id="durationMinusBtn" aria-label="Remove one day">-</button>
+                <span id="durationValue">0 days</span>
+                <button type="button" id="durationPlusBtn" aria-label="Add one day">+</button>
+              </div>
+              <div class="start-date-controls hidden" id="startDateControls" aria-label="Capsule start date">
+                <button type="button" id="startDateMinusBtn" aria-label="Move start date earlier">-</button>
+                <span id="startDateValue">Start: -</span>
+                <button type="button" id="startDatePlusBtn" aria-label="Move start date later">+</button>
+              </div>
             </div>
           </div>
           <div class="note-controls-row">

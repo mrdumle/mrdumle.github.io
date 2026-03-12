@@ -38,6 +38,10 @@ const durationControls = document.getElementById("durationControls");
 const durationMinusBtn = document.getElementById("durationMinusBtn");
 const durationPlusBtn = document.getElementById("durationPlusBtn");
 const durationValue = document.getElementById("durationValue");
+const startDateControls = document.getElementById("startDateControls");
+const startDateMinusBtn = document.getElementById("startDateMinusBtn");
+const startDatePlusBtn = document.getElementById("startDatePlusBtn");
+const startDateValue = document.getElementById("startDateValue");
 const colorSwatches = Array.from(document.querySelectorAll(".color-swatch"));
 const CAPSULE_COLORS = colorSwatches.map((swatch) => swatch.dataset.color).filter(Boolean);
 const DEFAULT_CAPSULE_COLOR = CAPSULE_COLORS[0] || "#ef4444";
@@ -128,6 +132,25 @@ function updateDurationControls(entry) {
   durationControls.classList.remove("hidden");
 }
 
+function updateStartDateControls(entry) {
+  if (!entry) {
+    startDateValue.textContent = "Start: -";
+    startDateMinusBtn.disabled = true;
+    startDatePlusBtn.disabled = true;
+    startDateControls.classList.add("hidden");
+    return;
+  }
+
+  const { start, end } = entryIndices(entry);
+  const duration = end - start + 1;
+  const maxStart = state.days.length - duration;
+  const [, month, day] = entry.startDate.split("-");
+  startDateValue.textContent = `${day}/${month}`;
+  startDateMinusBtn.disabled = start <= 0;
+  startDatePlusBtn.disabled = start >= maxStart;
+  startDateControls.classList.remove("hidden");
+}
+
 function allocateLanes(entries) {
   const sorted = entries
     .map((entry) => ({ entry, ...entryIndices(entry) }))
@@ -186,6 +209,7 @@ function setNotePanel(entryId) {
     });
     autoSizeNoteInput();
     updateDurationControls(null);
+    updateStartDateControls(null);
     return;
   }
 
@@ -199,6 +223,7 @@ function setNotePanel(entryId) {
   syncColorPicker(entry.color);
   autoSizeNoteInput();
   updateDurationControls(entry);
+  updateStartDateControls(entry);
 }
 
 function syncSelectionUI() {
@@ -344,7 +369,6 @@ function renderEntries() {
       syncSelectionUI();
       setNotePanel(entry.id);
     });
-    capsule.addEventListener("pointerdown", onEntryPointerDown);
     capsulesLayer.appendChild(capsule);
   }
 
@@ -354,6 +378,7 @@ function renderEntries() {
   selectionLayer.style.height = `${timelineBoard.offsetHeight}px`;
   syncSelectionUI();
   updateDurationControls(findEntry(state.selectedEntryId));
+  updateStartDateControls(findEntry(state.selectedEntryId));
 }
 
 function createEntryFromDrag() {
@@ -426,61 +451,6 @@ function onDotPointerUp(event) {
   state.drag.created = true;
   createEntryFromDrag();
   clearDrag();
-}
-
-function onEntryPointerDown(event) {
-  const capsule = event.currentTarget;
-  const entry = findEntry(capsule.dataset.entryId);
-  if (!entry) return;
-
-  state.selectedEntryId = entry.id;
-  syncSelectionUI();
-  setNotePanel(entry.id);
-
-  const { start, end } = entryIndices(entry);
-  const span = end - start;
-  const dragState = {
-    pointerId: event.pointerId,
-    startClientX: event.clientX,
-    baseStart: start,
-    span,
-    deltaDays: 0,
-  };
-
-  capsule.dataset.dragging = "true";
-  capsule.setPointerCapture(event.pointerId);
-
-  const onPointerMove = (moveEvent) => {
-    if (moveEvent.pointerId !== dragState.pointerId) return;
-    const deltaPx = moveEvent.clientX - dragState.startClientX;
-    const rawDeltaDays = Math.round(deltaPx / SPACING);
-    const minDelta = -dragState.baseStart;
-    const maxDelta = state.days.length - 1 - (dragState.baseStart + dragState.span);
-    const clampedDelta = clamp(rawDeltaDays, minDelta, maxDelta);
-    dragState.deltaDays = clampedDelta;
-    capsule.style.transform = `translateX(${clampedDelta * SPACING}px)`;
-  };
-
-  const onPointerEnd = (endEvent) => {
-    if (endEvent.pointerId !== dragState.pointerId) return;
-
-    capsule.removeEventListener("pointermove", onPointerMove);
-    capsule.removeEventListener("pointerup", onPointerEnd);
-    capsule.removeEventListener("pointercancel", onPointerEnd);
-    capsule.style.transform = "";
-    delete capsule.dataset.dragging;
-
-    if (dragState.deltaDays !== 0) {
-      const duration = dragState.span + 1;
-      applyEntryRangeFromStartAndDuration(entry, dragState.baseStart + dragState.deltaDays, duration);
-      saveState();
-      renderEntries();
-    }
-  };
-
-  capsule.addEventListener("pointermove", onPointerMove);
-  capsule.addEventListener("pointerup", onPointerEnd);
-  capsule.addEventListener("pointercancel", onPointerEnd);
 }
 
 function setupGlobalPointerHandling() {
@@ -632,6 +602,28 @@ function attachActions() {
     setNotePanel(entry.id);
   });
 
+  startDateMinusBtn.addEventListener("click", () => {
+    const entry = findEntry(state.selectedEntryId);
+    if (!entry) return;
+    const start = entryIndices(entry).start;
+    const nextDuration = durationDays(entry);
+    applyEntryRangeFromStartAndDuration(entry, start - 1, nextDuration);
+    saveState();
+    renderEntries();
+    setNotePanel(entry.id);
+  });
+
+  startDatePlusBtn.addEventListener("click", () => {
+    const entry = findEntry(state.selectedEntryId);
+    if (!entry) return;
+    const start = entryIndices(entry).start;
+    const nextDuration = durationDays(entry);
+    applyEntryRangeFromStartAndDuration(entry, start + 1, nextDuration);
+    saveState();
+    renderEntries();
+    setNotePanel(entry.id);
+  });
+
   colorPicker.addEventListener("click", (event) => {
     const swatch = event.target.closest(".color-swatch");
     if (!swatch) return;
@@ -648,7 +640,6 @@ function attachActions() {
 
   timelineBoard.addEventListener("click", (event) => {
     const capsule = event.target.closest(".entry-capsule");
-    if (capsule && capsule.dataset.dragging === "true") return;
     if (!capsule) {
       state.selectedEntryId = null;
       syncSelectionUI();

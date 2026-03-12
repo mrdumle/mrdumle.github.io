@@ -188,6 +188,14 @@ button.danger {
   flex-wrap: nowrap;
 }
 
+.right-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
 #noteTitleInput {
   flex: 0 0 160px;
   min-width: 120px;
@@ -216,17 +224,43 @@ button.danger {
   margin-top: 0;
 }
 
-.duration-controls {
-  display: flex;
+.start-date-controls {
+  display: grid;
+  grid-template-columns: 28px 68px 28px;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  column-gap: 8px;
   flex: 0 0 auto;
-  min-width: 110px;
+}
+
+#startDateValue {
+  display: block;
+  width: 100%;
+  min-width: 68px;
+  text-align: center;
+  color: #e9f1ff;
+  font-size: 13px;
+}
+
+#startDateMinusBtn,
+#startDatePlusBtn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 999px;
+  padding: 0;
+  line-height: 1;
+}
+
+.duration-controls {
+  display: grid;
+  grid-template-columns: 28px 68px 28px;
+  align-items: center;
+  column-gap: 8px;
+  flex: 0 0 auto;
 }
 
 #durationValue {
-  min-width: 62px;
+  min-width: 68px;
   text-align: center;
   color: #e9f1ff;
   font-size: 13px;
