@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quirki Language</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Quirki is a memory safe, data oriented language where every mutation has an arrow and every error is a value.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* Layout: sticky chapter rail on the left, one reading column on the right; code panels are always dark "terminals". */
+:root {
+  color-scheme: dark;       /* always dark */
+  --bg: #14121E;
+  --surface: #1C1929;
+  --ink: #ECEAF6;
+  --muted: #A29DBB;
+  --line: #2F2B42;
+  --accent: #FF9F5A;        /* the arrow colour: <- */
+  --accent-soft: #3A2618;
+  --ok: #69DB7C;
+  --err: #FF8787;
+
+  --code-bg: #0E0C17;
+  --code-line: #262236;
+  --code-fg: #E6E3F2;
+  --c-comment: #8A85A6;
+  --c-kw: #FF8FB8;
+  --c-type: #7FD6C9;
+  --c-fn: #A3BCFF;
+  --c-mut: #FFB547;
+  --c-ret: #FF9F5A;
+  --c-case: #B8E68F;
+  --c-str: #F2CB8A;
+  --c-task: #FF8080;
+  --c-def: #FF9F5A;
+
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius: 10px;
+  --rail: 220px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16.5px/1.65 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1.1; margin: 0; }
+p { margin: 0; }
+code, pre { font-family: var(--f-mono); }
+code { font-size: 0.88em; }
+:not(pre) > code {
+  background: var(--accent-soft); color: var(--ink);
+  padding: 0.1em 0.38em; border-radius: 5px; white-space: nowrap;
+}
+
+.wrap {
+  max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- top bar ---------- */
+
+/* ---------- hero ---------- */
+.hero .wrap {
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  gap: 48px; align-items: center; padding-block: 72px 64px;
+}
+.eyebrow {
+  font: 600 12.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent); margin-bottom: 18px; display: block;
+}
+.hero h1 { font-size: clamp(42px, 6.2vw, 76px); font-weight: 800; letter-spacing: -0.035em; }
+.hero h1 .arrow { color: var(--accent); font-family: var(--f-mono); font-weight: 700; letter-spacing: -0.08em; }
+.hero .lede { margin-top: 22px; font-size: 19px; color: var(--muted); max-width: 34em; }
+.hero-points { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 8px; font-size: 17px; color: var(--ink); }
+.hero-points li { position: relative; padding-left: 22px; }
+.hero-points li span { color: var(--muted); }
+.hero-points li::before { content: ""; position: absolute; left: 4px; top: 0.7em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* ---------- code panels ---------- */
+.code {
+  background: var(--code-bg); color: var(--code-fg);
+  border-radius: var(--radius); overflow: hidden; min-width: 0;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+}
+.code .bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 9px 14px; border-bottom: 1px solid var(--code-line);
+  font: 500 12px/1 var(--f-mono); color: var(--c-comment);
+}
+.code .bar button {
+  font: 500 12px/1 var(--f-mono); color: var(--c-comment); background: none;
+  border: 1px solid var(--code-line); border-radius: 6px; padding: 5px 9px; cursor: pointer;
+}
+.code .bar button:hover { color: var(--code-fg); border-color: var(--c-comment); }
+pre.q {
+  margin: 0; padding: 16px 0; overflow-x: auto;
+  font: 400 14px/1.7 var(--f-mono); tab-size: 4;
+}
+pre.q .ln { display: block; padding: 0 18px; border-left: 3px solid transparent; min-height: 1.7em; }
+pre.q .ln.err { background: rgba(255, 107, 107, 0.09); border-left-color: #FF6B6B; }
+pre.q .ln.ok  { background: rgba(105, 219, 124, 0.07); border-left-color: #69DB7C; }
+
+.t-com { color: var(--c-comment); font-style: italic; }
+.t-com .flag-err { color: #FF8A8A; font-style: normal; font-weight: 600; }
+.t-com .flag-ok { color: #8CE99A; font-style: normal; font-weight: 600; }
+.t-def { color: var(--c-def); font-weight: 700; }
+.t-kw { color: var(--c-kw); font-weight: 600; }
+.t-type { color: var(--c-type); }
+.t-fn { color: var(--c-fn); }
+.t-mut { color: var(--c-mut); font-weight: 700; }
+.t-ret { color: var(--c-ret); font-weight: 600; }
+.t-case { color: var(--c-case); }
+.t-str, .t-num { color: var(--c-str); }
+.t-task { color: var(--c-task); font-weight: 600; }
+.t-q { color: var(--c-kw); font-weight: 700; }
+[data-tip] { cursor: help; }
+
+
+/* ---------- compare ---------- */
+.compare .wrap { padding-block: 72px; }
+.compare h2 { font-size: clamp(26px, 3vw, 36px); letter-spacing: -0.02em; font-weight: 800; max-width: 22em; }
+.compare > .wrap > p { color: var(--muted); margin-top: 12px; max-width: 40em; }
+.cmp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; margin-top: 32px; }
+.cmp .label { font: 600 12.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px; display: block; }
+.cmp .label.q { color: var(--accent); }
+.cmp-note { margin-top: 12px; font-size: 15px; color: var(--muted); }
+pre.plain { margin: 0; padding: 16px 18px; overflow-x: auto; font: 400 14px/1.7 var(--f-mono); color: #BDB8D3; }
+pre.plain .c { color: var(--c-comment); font-style: italic; }
+
+/* ---------- tour ---------- */
+.tour { border-top: 1px solid var(--line); }
+.tour > .wrap { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); gap: 56px; padding-block: 64px 96px; }
+.rail { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; }
+.rail .eyebrow { margin-bottom: 14px; }
+.rail ol { list-style: none; margin: 0; padding: 0; counter-reset: ch; display: flex; flex-direction: column; gap: 2px; }
+.rail li { counter-increment: ch; }
+.rail a {
+  display: grid; grid-template-columns: 28px 1fr; align-items: baseline;
+  text-decoration: none; padding: 7px 10px; border-radius: 8px; font-size: 14.5px; color: var(--muted);
+}
+.rail a::before { content: counter(ch, decimal-leading-zero); font: 500 11.5px/1 var(--f-mono); color: var(--muted); opacity: .7; }
+.rail a:hover { color: var(--ink); background: var(--surface); }
+.rail a.active { color: var(--ink); background: var(--surface); font-weight: 600; box-shadow: inset 2px 0 0 var(--accent); }
+.rail a.active::before { color: var(--accent); opacity: 1; }
+
+.chapters { display: flex; flex-direction: column; gap: 88px; min-width: 0; }
+.chapter { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.chapter > header { display: flex; flex-direction: column; gap: 10px; }
+.chapter .num { font: 600 13px/1 var(--f-mono); color: var(--accent); }
+.chapter h2 { font-size: clamp(28px, 3.2vw, 38px); font-weight: 800; letter-spacing: -0.025em; }
+.chapter h2 code { font-size: 0.78em; background: none; padding: 0; color: var(--accent); }
+.chapter h3 { font-size: 20px; font-weight: 700; margin-top: 8px; letter-spacing: -0.01em; }
+.chapter p, .chapter li { max-width: 40em; }
+.chapter .intro { font-size: 18px; color: var(--muted); }
+.chapter ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+
+/* ---------- happy cases banner ---------- */
+.happy-banner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px; margin: 6px 0 4px; }
+.happy-kicker { margin: 0 0 18px; font: 600 18px/1 var(--f-mono); color: var(--muted); letter-spacing: 0.04em; }
+.chapter h2.happy-title {
+  margin-top: 0; font-size: clamp(52px, 8.5vw, 104px); line-height: 0.92; letter-spacing: -0.04em; text-transform: uppercase;
+  background: linear-gradient(90deg, var(--c-task), var(--c-mut), var(--c-str), var(--c-case), var(--c-fn), #C7A9FF);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.happy-art { width: 240px; height: auto; display: block; overflow: visible; }
+.happy-art .rainbow path { fill: none; stroke-width: 11; stroke-linecap: round; }
+.happy-art .sun circle { fill: var(--c-str); }
+.happy-art .rays line { stroke: var(--c-str); stroke-width: 5; stroke-linecap: round; }
+.happy-art .rays { animation: spin 24s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .happy-art .rays { animation: none; } }
+@media (max-width: 720px) {
+  .happy-banner { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .happy-art { width: 170px; order: -1; }
+}
+
+.rule {
+  border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius);
+  padding: 16px 18px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; max-width: 46em;
+}
+.rule .tag { font: 700 11.5px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); grid-row: span 2; padding-top: 2px; }
+.rule strong { font-weight: 600; }
+.rule p { color: var(--muted); font-size: 15.5px; }
+.rule.why-rule .tag { color: var(--muted); }
+
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+footer { border-top: 1px solid var(--line); }
+footer .wrap { padding-block: 32px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--muted); }
+footer code { background: none; padding: 0; color: var(--accent); }
+
+
+/* comparison: equal-height panels */
+.cmp .side { display: flex; flex-direction: column; min-width: 0; }
+.cmp .side .code { flex: 1; display: flex; flex-direction: column; }
+.cmp .side pre { flex: 1; padding-block: 16px; }
+
+/* tour: intro and "new symbols" chips */
+.tour-intro { display: flex; flex-direction: column; gap: 14px; padding-bottom: 8px; }
+.tour-intro h2 { font-size: clamp(30px, 3.6vw, 44px); font-weight: 800; letter-spacing: -0.025em; }
+.tour-intro p { color: var(--muted); font-size: 18px; max-width: 38em; }
+
+/* show the real characters: no <- to arrow ligatures */
+code, pre, pre.q, pre.plain, .arrow, .eyebrow, .num {
+  font-variant-ligatures: none; font-feature-settings: "calt" 0, "liga" 0;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 980px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 36px; padding-block: 48px; }
+  .tour > .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .rail { position: static; max-height: none; }
+  .rail ol { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .rail a { grid-template-columns: auto auto; gap: 6px; border: 1px solid var(--line); padding: 6px 10px; font-size: 13.5px; }
+}
+@media (max-width: 720px) {
+  .cmp, .pair { grid-template-columns: minmax(0, 1fr); }
+  .hero .lede { font-size: 17px; }
+  pre.q, pre.plain { font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">A memory safe, data oriented language</span>
+      <h1>Quirki</h1>
+      <p class="lede">A small, work-in-progress language asking one question: could fast, memory safe code also be obvious to read, and hard to get wrong? It grew out of my work in the video game industry, where code has to run fast and bugs are expensive to find. I couldn't find a language that did all of this, so I started designing one.</p>
+      <ul class="hero-points">
+        <li>One way to branch. <span>Cases elegantly replace if, switch, optionals and error types. Conditions, enums, bools and errors all work the same way.</span></li>
+        <li>No garbage collector. <span>Every value has one owner, so there are no pauses to tune around.</span></li>
+        <li>Errors you can't forget. <span>Every way a call can fail is in its signature, and the compiler makes you handle it. No exceptions jumping past the code you're reading.</span></li>
+        <li>Simple concurrency. <span>Dead simple to write, and safe: two tasks can never change the same variable.</span></li>
+        <li>Borrows from Rust, Swift, Odin, Go and Lobster. <span>Rust's safety, Swift's readability, Odin's directness, Go's simplicity and Lobster's lightweight blocks, without the ceremony.</span></li>
+        <li>Every change is marked with <code>&lt;-</code>. <span>You never have to open a function to see what it touched.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPARE ================= -->
+<section class="compare">
+  <div class="wrap">
+    <h2>The same four lines. Only one tells you what changed.</h2>
+    <p>In a typical object oriented language you have to open each method to find out what it touches. In Quirki the call site says it.</p>
+    <div class="cmp">
+      <div class="side">
+        <span class="label">Typical OO style</span>
+        <div class="code">
+          <div class="bar"><span>typical</span></div>
+<pre class="plain">world.spawn(enemy);
+<span class="c">// changes world? enemy? both?</span>
+
+var e = list.last();
+<span class="c">// a copy or a reference?</span>
+
+var c = e;
+<span class="c">// a new entity, or shared with e?</span>
+
+var a = load(path);
+<span class="c">// might throw. who catches it?</span></pre>
+        </div>
+      </div>
+      <div class="side">
+        <span class="label q">Quirki</span>
+        <div class="code">
+          <div class="bar"><span>quirki</span></div>
+<pre class="q">world <- Spawn(enemy)
+// world changes. enemy can't.
+
+Entity e = loan GetLast(list)
+// a reference, tracked by the compiler
+
+Entity c = copy e
+// a real copy. you can see it on the line.
+
+Asset a = ? LoadAsset(path) |: fallback
+// on failure, use fallback. right here.</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TOUR ================= -->
+<section class="tour" id="tour">
+  <div class="wrap">
+    <aside class="rail" aria-label="Chapters">
+      <span class="eyebrow">Learn Quirki</span>
+      <ol>
+        <li><a href="#data">Data</a></li>
+        <li><a href="#cases">Cases</a></li>
+        <li><a href="#functions">Functions</a></li>
+        <li><a href="#mutation">Mutation</a></li>
+        <li><a href="#matching">Matching</a></li>
+        <li><a href="#happy">Happy cases</a></li>
+        <li><a href="#concurrency">Concurrency</a></li>
+        <li><a href="#ownership">Ownership</a></li>
+        <li><a href="#refs">Refs &amp; loans</a></li>
+        <li><a href="#blocks">Blocks</a></li>
+        <li><a href="#small">Small rules</a></li>
+      </ol>
+    </aside>
+
+    <div class="chapters">
+
+      <div class="tour-intro">
+        <h2>Learn Quirki one symbol at a time</h2>
+        <p>Quirki has a small set of symbols, and each one means the same thing everywhere. Each chapter introduces a symbol or two, and later chapters combine the ones you've already seen. By the end, every line of Quirki should read like a sentence.</p>
+        <div class="legend" aria-label="Code colour legend">
+          <span><i style="background:var(--c-mut)"></i>mutation</span>
+          <span><i style="background:var(--c-ret)"></i>cases &amp; return</span>
+          <span><i style="background:var(--c-kw)"></i>ownership &amp; checks</span>
+          <span><i style="background:var(--c-task)"></i>tasks</span>
+          <span><i style="background:var(--c-type)"></i>types</span>
+          <span><i style="background:var(--c-fn)"></i>functions</span>
+          <span><i style="background:#FF6B6B"></i>line is an error</span>
+        </div>
+      </div>
+
+      <!-- 01 -->
+      <article class="chapter" id="data">
+        <header>
+          <span class="num">01 / Data</span>
+          <h2>A new name starts with <code>===</code></h2>
+          <p class="intro">Every definition in Quirki starts with three equals signs. When you scan a file, each <code>===</code> marks the start of something new.</p>
+        </header>
+        <p>The simplest definition is a struct: a name, then its fields, each with a type and a name.</p>
+        <div class="code"><div class="bar"><span>a struct</span></div>
+<pre class="q">=== Hero
+    Entity entity
+    Weapon weapon
+    Int health
+    Int armorClass</pre></div>
+        <p>That's all a struct is: data. There are no methods inside it. You'll see in a moment where the behaviour goes.</p>
+      </article>
+
+      <!-- 02 -->
+      <article class="chapter" id="cases">
+        <header>
+          <span class="num">02 / Cases</span>
+          <h2>Enums</h2>
+          <p class="intro">When a value can be one of several things, list them with <code>|</code>. A weapon fires with success, or no ammo, or a jam. This kind of type is called an enum.</p>
+        </header>
+        <div class="code"><div class="bar"><span>an enum</span></div>
+<pre class="q">=== FireWeapon
+    | success
+    | noAmmo
+    | jammed
+    | overheated</pre></div>
+        <p>A case can carry values, written in parentheses after its name:</p>
+        <div class="code"><div class="bar"><span>cases with values</span></div>
+<pre class="q">=== AIState
+    | idle
+    | patrol(Vector)
+    | attack(Entity, Weapon)
+    | flee(Vector)</pre></div>
+        <p>Two shorthands. Leave out the name and the case is named by its type. Or tie each case to a fixed value with <code>=</code>.</p>
+        <div class="pair">
+          <div class="code"><div class="bar"><span>named by type</span></div>
+<pre class="q">=== Shape
+    | (Circle)
+    | (Square)
+    | (Triangle)</pre></div>
+          <div class="code"><div class="bar"><span>tied to values</span></div>
+<pre class="q">=== Direction
+    | north = float2(0,1)
+    | south = float2(0,-1)
+    | east  = float2(1,0)
+    | west  = float2(-1,0)</pre></div>
+        </div>
+        <p>Hold on to <code>|</code>. It comes back in almost every chapter, and it always means the same thing: one of these.</p>
+      </article>
+
+      <!-- 03 -->
+      <article class="chapter" id="functions">
+        <header>
+          <span class="num">03 / Functions</span>
+          <h2>Inputs in <code>( )</code>, output after <code>|</code></h2>
+          <p class="intro">Functions are defined with <code>===</code> too. The inputs go in parentheses.</p>
+        </header>
+        <div class="code">
+<pre class="q">=== PrintHealth(Hero hero)
+    print(hero.health)</pre></div>
+        <h3>Inputs are read-only</h3>
+        <p>Everything inside <code>( )</code> can be looked at but not changed. There is no <code>const</code>, <code>&amp;</code> or <code>mut</code> to write. Being inside the parentheses is enough. So when you see <code>PrintHealth(hero)</code>, you know <code>hero</code> comes back exactly as it went in, without opening the function.</p>
+        <h3>Output after <code>|</code></h3>
+        <p>What a function gives back goes after a <code>|</code>. Read it as: DotProduct takes two <code>Float3</code>s and gives back a <code>Float</code>.</p>
+        <div class="code">
+<pre class="q">=== DotProduct(Float3 a, Float3 b) | Float</pre></div>
+        <p>Remember, <code>|</code> means "one of these". It's the same symbol as in enums. Next we'll see why.</p>
+        <div class="code">
+<pre class="q">=== LoadAsset(Path path) | success(Asset) | failToLoad</pre></div>
+        <p>LoadAsset gives back either a success with an Asset, or a failToLoad. That's how Quirki handles errors. There are no exceptions, only cases you can see in the signature.</p>
+      </article>
+
+      <!-- 04 -->
+      <article class="chapter" id="mutation">
+        <header>
+          <span class="num">04 / Mutation</span>
+          <h2>Arrows show where data flows</h2>
+          <p class="intro">Inputs inside <code>( )</code> are read-only. So how do you change something? With <code>&lt;-</code>. It points into the variable that changes.</p>
+        </header>
+        <div class="code">
+<pre class="q">direction <- Normalize()</pre></div>
+        <p>Several things can change at once. They are all on the left.</p>
+        <div class="code">
+<pre class="q">hero, enemy <- Battle()</pre></div>
+        <div class="code"><div class="bar"><span>the left side tells you</span></div>
+<pre class="q">// The beauty of this: you can tell what changed
+// just by glancing down the left side.
+speed = distance / time
+target = FindNearest(enemies)
+hero <- MoveTowards(target, speed)
+hero, target <- Battle()</pre></div>
+        <h3>Chaining</h3>
+        <p>When the functions return nothing, you can chain them. They run left to right.</p>
+        <div class="code">
+<pre class="q">direction <- Normalize() <- Inverse()</pre></div>
+        <h3>No nesting</h3>
+        <p>A change inside another call's arguments is not allowed. The order of changes should be obvious from reading top to bottom.</p>
+        <div class="code">
+<pre class="q">data <- Foo( thing <- Bar() )  // Error: nested mutation</pre></div>
+        <h3>The signature</h3>
+        <p>In a definition, <code>-&gt;</code> marks what the function changes. Now the three slots of a signature are complete, always in this order: what it <strong>reads</strong>, what it <strong>changes</strong>, what it <strong>returns</strong>.</p>
+        <div class="code"><div class="bar"><span>read · change · return</span></div>
+<pre class="q">=== ApplyDamage(Int amount) -> Hero hero | died | survived
+
+// at the call site, the changed variable is on the left
+hero <- ApplyDamage(amount)</pre></div>
+      </article>
+
+      <!-- 05 -->
+      <article class="chapter" id="matching">
+        <header>
+          <span class="num">05 / Matching</span>
+          <h2>The same <code>|</code>, now after a value</h2>
+          <p class="intro">You define cases with <code>|</code>, and you handle them with <code>|</code> too. Write a value, then list its cases below, each followed by <code>:</code> and what to do.</p>
+        </header>
+        <div class="code">
+<pre class="q">hulk.mood
+| sleepy : hulk <- Rest()
+| angry  : hulk <- Transform()</pre></div>
+        <p>This works on any value, not only enums:</p>
+        <div class="code">
+<pre class="q">player.name
+| "John" : player <- ExtraLuck()
+| "Mike" : player <- Curse()</pre></div>
+        <h3>Else is an empty case</h3>
+        <p>Matching an enum must cover every case. A case with no name, <code>|:</code>, catches everything else. It's your "else".</p>
+        <div class="code">
+<pre class="q">hulk.mood
+| angry : hulk <- Transform()
+|: hulk <- Rest()</pre></div>
+      </article>
+
+      <!-- 06 -->
+      <article class="chapter" id="happy">
+        <header>
+          <p class="happy-kicker">Now it's time for...</p>
+          <div class="happy-banner">
+            <div>
+              <h2 class="happy-title">Happy cases</h2>
+            </div>
+            <svg class="happy-art" viewBox="0 0 260 150" aria-hidden="true">
+              <g class="rainbow">
+              <path d="M 8 140 A 112 112 0 0 1 232 140" style="stroke:var(--c-task)"/>
+              <path d="M 20 140 A 100 100 0 0 1 220 140" style="stroke:var(--c-mut)"/>
+              <path d="M 32 140 A 88 88 0 0 1 208 140" style="stroke:var(--c-str)"/>
+              <path d="M 44 140 A 76 76 0 0 1 196 140" style="stroke:var(--c-case)"/>
+              <path d="M 56 140 A 64 64 0 0 1 184 140" style="stroke:var(--c-fn)"/>
+              <path d="M 68 140 A 52 52 0 0 1 172 140" style="stroke:#C7A9FF"/>
+              </g>
+              <g class="sun" transform="translate(212 40)">
+                <g class="rays">
+                <line x1="27.0" y1="0.0" x2="37.0" y2="0.0"/>
+                <line x1="19.1" y1="19.1" x2="26.2" y2="26.2"/>
+                <line x1="0.0" y1="27.0" x2="0.0" y2="37.0"/>
+                <line x1="-19.1" y1="19.1" x2="-26.2" y2="26.2"/>
+                <line x1="-27.0" y1="0.0" x2="-37.0" y2="0.0"/>
+                <line x1="-19.1" y1="-19.1" x2="-26.2" y2="-26.2"/>
+                <line x1="-0.0" y1="-27.0" x2="-0.0" y2="-37.0"/>
+                <line x1="19.1" y1="-19.1" x2="26.2" y2="-26.2"/>
+                </g>
+                <circle r="19"/>
+              </g>
+            </svg>
+          </div>
+          <p class="intro">Lots of things either work or don't. A file loads, or it doesn't. A search finds something, or nothing. Quirki makes these cases easy to write, and the happy path easy to follow.</p>
+        </header>
+        <p>The simplest example is a value that might be missing. You either have an asset, or you have nil:</p>
+        <div class="code">
+<pre class="q">=== MaybeAsset
+    |> (Asset)
+    | nil</pre></div>
+        <p>That's it. <code>|&gt;</code> is the case where things went well, and <code>|</code> is the one where they didn't.</p>
+        <p>A type can have more than one happy case, as long as they all carry the same type. That way you can use the value without caring which one you got:</p>
+        <div class="code">
+<pre class="q">=== LoadResult
+    |> success(Asset)
+    |> dummyDefault(Asset)
+    | errorCode(Int)</pre></div>
+        <h3>Why mark the happy case?</h3>
+        <p>Because it lets one small idea do the work of several. Optionals, error types and plain true/false results all become the same thing: a type where some cases mean "it worked". That's one thing to learn instead of three, and we hope it stays out of your way.</p>
+        <p><code>?</code> asks: is this value a happy case? If it is, you get the value inside.</p>
+        <p>Say <code>Load</code> gives back a <code>LoadResult</code>. One look at <code>LoadResult</code> shows it has happy cases, so you know straight away you can unwrap it, right at the call:</p>
+        <div class="code">
+<pre class="q">? loadResult as asset :
+    Draw(asset)    // only runs when it loaded</pre></div>
+        <p>No error codes to check by hand, and no way to use the asset when it didn't load.</p>
+        <h3>Happy, or else</h3>
+        <p>After a <code>?</code>, the else symbol <code>|:</code> simply reads as "if it didn't work". Use it to give a fallback value:</p>
+        <div class="code">
+<pre class="q">Asset asset = ? Load(path) |: defaultTexture</pre></div>
+        <p>Bools work the same way, since <code>true</code> is their happy case. A single check reads like an if, and the same shape works as an expression:</p>
+        <div class="code">
+<pre class="q">? hero.isAlive : hero <- GetUp()
+
+Int steps = ? farOff : 10 |: 0</pre></div>
+        <h3>Guard against failure</h3>
+        <p>Or leave the function right there. Put <code>=&gt;</code> after <code>|:</code> to return from the function, and everything below the guard can trust that the value exists.</p>
+        <div class="code">
+<pre class="q">=== DrawIcon(Path path) | drawn | failed
+
+    Asset asset = ? Load(path) |: => .failed
+
+    // from here on, asset is always there
+    Draw(asset)
+    => .drawn</pre></div>
+        <p>The failure is handled once, at the top, and the rest of the function only deals with the happy path.</p>
+        <h3>Need the error?</h3>
+        <p>Name the unhappy value with <code>| as name</code>. Every path must end in a happy value or a <code>=&gt;</code>.</p>
+        <div class="code">
+<pre class="q">Asset asset = ? Load(path) | as failure :
+    print(failure.name)
+    => .failed</pre></div>
+        <h3>Every case, by name</h3>
+        <p>Drop the <code>?</code> for an exhaustive match, where every case must be handled. <code>(=)</code> means "the value inside is the result", and <code>(.)</code> ignores it. In Quirki a dot always means "nothing" or "ignore".</p>
+        <div class="code">
+<pre class="q">Asset asset = Load(path)
+| success(=)
+| dummyDefault(=)
+| errorCode(.) : => .failed</pre></div>
+        <h3>Insist with <code>!</code></h3>
+        <p><code>!</code> unwraps and crashes if the value isn't happy. In Quirki <code>!</code> is only ever about errors, which is why "not equal" is written <code>=/=</code>. A nice side effect: searching your project for <code>!</code> should give you a good list of the places that can crash.</p>
+        <div class="code">
+<pre class="q">// unwrap an optional, or crash if it's nil
+MaybeAsset maybe = FindAsset(name)
+Asset asset = maybe!
+
+// or straight from a call
+Draw( Load(path)! )</pre></div>
+        <h3>Conditions are happy cases too</h3>
+        <p>The same idea covers plain conditions. In Quirki, a <code>Bool</code> is defined like this:</p>
+        <div class="code">
+<pre class="q">=== Bool
+    |> true
+    | false</pre></div>
+        <p><code>true</code> is the happy case, so <code>?</code> works on any condition too.</p>
+        <h3>Happy cases in a signature</h3>
+        <p>You don't always need a separate type. Happy cases can be written straight into a function's signature:</p>
+        <div class="code">
+<pre class="q">=== LoadAsset(Path path) |> success(Asset) | failToLoad</pre></div>
+        <div class="rule">
+          <span class="tag">Rule</span>
+          <p><strong>A match that produces a value needs a value or a <code>=&gt;</code> in every case.</strong></p>
+        </div>
+      </article>
+
+      <!-- 07 -->
+      <article class="chapter" id="concurrency">
+        <header>
+          <span class="num">07 / Concurrency</span>
+          <h2>Easy concurrency, built in</h2>
+          <p class="intro">Concurrency in Quirki is designed to be easy to write and easy to reason about.<br><code>#</code> starts a task<br><code>---</code> awaits them</p>
+        </header>
+        <p>The most common case: update every item at the same time, then wait for all of them.</p>
+        <div class="code"><div class="bar"><span>one task per item</span></div>
+<pre class="q">Each(entities) as e:
+    #: e <- Update()
+---</pre></div>
+        <p>Tasks can also have names, and be nested:</p>
+        <div class="code"><div class="bar"><span>tasks and a barrier</span></div>
+<pre class="q">#load:
+    #file:
+        path <- Format()
+        LoadFile(path)
+
+    #texture: LoadTexture()
+---
+
+// Results are shaped like the task tree
+UseTexture(load.texture)</pre></div>
+        <p>Before the barrier, a task's name stands for the running task, so you can't read it yet. After <code>---</code>, it's just data.</p>
+        <div class="code">
+<pre class="q">#texture: LoadTexture()
+Use(texture)      // Error: texture is not done yet
+---
+Use(texture)      // OK: it's plain data now</pre></div>
+        <p>A task can have its own barrier inside:</p>
+        <div class="code">
+<pre class="q">#task:
+    #a: A()
+    #b: B()
+    ---
+    #c: Use(a, b)</pre></div>
+        <h3>Race, types and lanes</h3>
+        <div class="pair">
+          <div class="code"><div class="bar"><span>first one wins</span></div>
+<pre class="q">#winner (race):
+    #: LoadCache()
+    #: Network()
+    #: Sleep(5.0)</pre></div>
+          <div class="code"><div class="bar"><span>explicit type</span></div>
+<pre class="q">#Mesh mesh: LoadMesh()</pre></div>
+        </div>
+        <div class="code"><div class="bar"><span>pick a thread</span></div>
+<pre class="q">Lane physics:
+    Each(entities) as e :
+        #: e <- PhysicsUpdate()
+---</pre></div>
+        <h3>Collecting results into a list</h3>
+        <p>Parallel tasks may never change the same variable, so tasks don't append to a shared list. The loop appends the <em>pending</em> tasks, and each task only returns its value. After <code>---</code> it's a plain list, in loop order.</p>
+        <div class="code">
+<pre class="q">#Texture[] textures
+
+Each(paths) as path:
+    textures <- Append( #: LoadTexture(path) )
+---
+UseTextures(textures)     // a Texture[] now</pre></div>
+        <p>Writing to fixed, separate slots is fine too:</p>
+        <div class="code">
+<pre class="q">Int n = 12
+Int[n] values
+
+Each(from: 0, to: n) as i :
+    #: values[i] = CalculateSomething(i)</pre></div>
+      </article>
+
+      <!-- 08 -->
+      <article class="chapter" id="ownership">
+        <header>
+          <span class="num">08 / Ownership</span>
+          <h2>One owner per value</h2>
+          <p class="intro">Every value has exactly one owner. Assigning it to another variable moves it, and the old name stops working. A copy is always written out.</p>
+        </header>
+        <div class="pair">
+          <div class="code"><div class="bar"><span>move</span></div>
+<pre class="q">a = b
+
+Use(a)  // OK
+Use(b)  // Error: b was taken</pre></div>
+          <div class="code"><div class="bar"><span>copy</span></div>
+<pre class="q">a = copy b
+
+Use(a)  // OK
+Use(b)  // OK: both remain valid</pre></div>
+        </div>
+        <p>Inputs in <code>( )</code> are only borrowed by the call. To hand a value over for good, write <code>take</code>, both in the signature and at the call:</p>
+        <div class="code">
+<pre class="q">=== Insert(take Item item) -> Inventory inventory
+
+hero.inventory <- Insert(take item)
+Use(item)  // Error: item now lives in the inventory</pre></div>
+      </article>
+
+      <!-- 09 -->
+      <article class="chapter" id="refs">
+        <header>
+          <span class="num">09 / Refs &amp; loans</span>
+          <h2>References without lifetime annotations</h2>
+          <p class="intro">A function can return a <code>ref</code>: access to a value it doesn't own. The caller then chooses to <code>loan</code> it (keep the access) or <code>copy</code> it.</p>
+        </header>
+        <div class="code">
+<pre class="q">=== GetLast(Entity[] entities) | ref Entity
+    => entities[entities.length - 1]
+
+Entity e = GetLast(entities)        // Error: this is a reference
+Entity e = loan GetLast(entities)   // OK
+Entity e = copy GetLast(entities)   // OK</pre></div>
+        <p>A loan works like the value, with two exceptions:</p>
+        <div class="code">
+<pre class="q">Use(e)                 // OK
+e <- Mutate()          // OK
+SomeFunction(take e)   // Error: borrowed values can't be taken
+e = NewEntity()        // Error: loans can't be reassigned</pre></div>
+        <h3>The loan rule</h3>
+        <p>While a loan is alive, its original is locked. The loan ends automatically after its last use.</p>
+        <div class="code">
+<pre class="q">Entity e = loan GetLast(entities)
+entities <- Clear()      // Error: e still points into entities
+Use(e)
+entities <- Clear()      // OK: e is not used anymore</pre></div>
+        <p>Without this rule, the loan could point at memory that's gone:</p>
+        <div class="code">
+<pre class="q">Entity e = loan GetLast(entities)
+entities <- Clear()      // the list frees its memory
+e <- Mutate()            // writes into freed memory</pre></div>
+        <p>Every change is written with <code>&lt;-</code>, so the compiler can check this without a separate "mutable borrow" type.</p>
+        <h3>Changing through a loan</h3>
+        <p>Changing a loan counts as changing its original. So you may only change <code>e</code> where you're allowed to change <code>entities</code>. One <code>GetLast</code> works for both reading and writing.</p>
+        <div class="pair">
+          <div class="code"><div class="bar"><span>read-only list</span></div>
+<pre class="q">=== CountAlive(Entity[] entities) | Int
+    Entity e = loan GetLast(entities)
+    e <- Kill()     // Error: entities is read-only</pre></div>
+          <div class="code"><div class="bar"><span>mutable list</span></div>
+<pre class="q">=== KillLast() -> Entity[] entities
+    Entity e = loan GetLast(entities)
+    e <- Kill()     // OK: entities may change</pre></div>
+        </div>
+        <h3>Two rules that remove lifetime syntax</h3>
+        <div class="rule">
+          <span class="tag">Rule</span>
+          <p><strong>A ref is never stored in a struct.</strong></p>
+          <p>Refs only live in locals, so a ref simply lasts until the end of its block. Store an index or id instead and look it up when you need it.</p>
+        </div>
+        <div class="code">
+<pre class="q">=== Player
+    ref Entity target      // Error: refs can't be stored
+    Int targetIndex        // OK</pre></div>
+        <div class="rule">
+          <span class="tag">Rule</span>
+          <p><strong>A returned ref must point into one of the arguments.</strong></p>
+          <p>Then the compiler always knows what the ref borrows from. With several arguments, it borrows from all of them.</p>
+        </div>
+        <div class="code">
+<pre class="q">=== Make() | ref Entity
+    Entity e = NewEntity()
+    => e                   // Error: e dies when Make returns
+
+=== Bigger(Entity a, Entity b) | ref Entity
+
+Entity big = loan Bigger(a, b)
+a <- Heal(10)              // Error: big may point into a
+Use(big)</pre></div>
+        <p>Read-only inputs accept both owned and borrowed values, so you never write two versions of a function.</p>
+      </article>
+
+      <!-- 10 -->
+      <article class="chapter" id="blocks">
+        <header>
+          <span class="num">10 / Blocks</span>
+          <h2>Pass code to functions</h2>
+          <p class="intro">You've already used <code>Each(entities) as e:</code>. Your own functions can take a block of code the same way, and calling them looks built in.</p>
+        </header>
+        <div class="code">
+<pre class="q">=== F = () -> Entity                   // a function type
+=== G = (Float dt) -> Entity | Bool     // same slots as a definition
+
+=== ForEachAlive(Entity[] entities, F action)
+    Each(entities) as entity:
+        ? entity.isAlive : entity <- action()
+
+// Calling it
+ForEachAlive(entities) as entity:
+    entity <- Heal(10)</pre></div>
+        <div class="rule">
+          <span class="tag">Rule 1</span>
+          <p><strong>Functions are only passed as parameters.</strong></p>
+          <p>They can't be stored, assigned or returned. A block only runs during the call, so it just borrows what it uses. Where you'd store a callback, use an enum and a match.</p>
+        </div>
+        <div class="rule">
+          <span class="tag">Rule 2</span>
+          <p><strong>What a block uses counts as extra arguments of the call.</strong></p>
+          <p>The usual rules about passing a variable twice then apply.</p>
+        </div>
+        <div class="code">
+<pre class="q">ForEachAlive(entities) as e:
+    e <- Heal(10)              // OK: its own element
+    count <- Add(1)            // OK: only the block touches count
+    print(entities.length)     // OK: reading is fine
+    entities <- Clear()        // Error: entities is in use by the call
+    entities[0] <- Kill()      // Error: same reason</pre></div>
+        <div class="rule">
+          <span class="tag">Rule 3</span>
+          <p><strong><code>#F</code> marks a block that may run as tasks.</strong></p>
+          <p>It's the task symbol from the Concurrency chapter. Such a block can change what it's given and only read everything else.</p>
+        </div>
+        <div class="code">
+<pre class="q">=== UpdateAll(Entity[] entities, #F action)
+
+UpdateAll(entities) as e:
+    e <- Move(speed)           // OK
+    count <- Add(1)            // Error: this block may run as tasks</pre></div>
+        <p>To count in parallel, let each task return a value and add them up after the barrier:</p>
+        <div class="code">
+<pre class="q">#Int[] hits
+Each(entities) as e:
+    hits <- Append( #: ? e.isAlive : 1 |: 0 )
+---
+count = Sum(hits)</pre></div>
+      </article>
+
+      <!-- 11 -->
+      <article class="chapter" id="small">
+        <header>
+          <span class="num">11 / Small rules</span>
+          <h2>A few things that keep code honest</h2>
+        </header>
+        <h3>Do nothing with <code>|:.</code></h3>
+        <p>Add a dot to the else case and it means "anything else: do nothing". It's the same dot as in <code>(.)</code>: nothing, or ignore. It only works in matches used as statements, since a match that produces a value needs a value in every case.</p>
+        <div class="code">
+<pre class="q">hulk.mood
+| angry : hulk <- Transform()
+|:.</pre></div>
+        <h3>Never the same variable twice</h3>
+        <p>One call can't see the same variable through two names. This removes a whole class of aliasing bugs and helps the optimizer.</p>
+        <div class="code">
+<pre class="q">func(a, a)       // Error
+a, a <- func()   // Error
+a <- func(a)     // Error: copy a to use it as an input</pre></div>
+        <h3>No cases after a change that returns nothing</h3>
+        <p>Cases after <code>state &lt;- ChangeState()</code> would look like they check the new <code>state</code>. They don't, so Quirki stops you. To check <code>state</code>, match on it on its own line.</p>
+        <div class="code">
+<pre class="q">state <- ChangeState()   // Error: nothing to match on
+| ok
+| fail
+
+state <- ChangeState()
+state                    // OK: match on state itself
+| ok
+| fail</pre></div>
+        <h3><code>!</code> is only for errors</h3>
+        <p>Not-equal is <code>=/=</code>. Flip a bool with <code>Invert(flag)</code>, or in place with <code>flag &lt;- Invert()</code>.</p>
+        <div class="code">
+<pre class="q">? hero.health =/= 0 : hero <- Rest()
+isOpen <- Invert()</pre></div>
+        <h3>Matching on true</h3>
+        <p>Put <code>?</code> in front and each <code>|</code> becomes a condition, tested in order. <code>|:</code> is still the else.</p>
+        <div class="code">
+<pre class="q">? x >= 3 : inventory <- UseItem(item, 2)
+| x >= 1 : inventory <- UseItem(item, 1)
+|: print("no items left!")</pre></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Quirki is a language design in progress. Syntax may change.</span>
+    <span>Mutation is a <code>&lt;-</code> away.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // ---------- Quirki highlighter ----------
+  var TIPS = {
+    "===": "=== defines a struct, function, enum or function type",
+    "<-": "<- mutates the variable(s) on the left",
+    "->": "-> in a signature: this parameter is mutated",
+    "=>": "=> returns a value",
+    "|>": "|> marks a happy case",
+    "|:.": "|:. all other cases: do nothing",
+    "|:": "|: otherwise",
+    "|": "| a case, or the return type",
+    "?": "? is this a happy case?",
+    "!": "! unwrap, or crash if not a happy case",
+    "---": "--- waits for every task above",
+    "=/=": "=/= not equal",
+    "take": "take moves ownership into the call",
+    "copy": "copy duplicates the value",
+    "loan": "loan keeps tracked access to a value you don't own",
+    "ref": "ref is access to a value the function doesn't own",
+    "as": "as names a value"
+  };
+  var KW = { take: 1, copy: 1, loan: 1, ref: 1, as: 1, race: 1 };
+  var TYPES = { Int: 1, Float: 1, Float2: 1, Float3: 1, Bool: 1, String: 1 };
+
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function span(cls, text, tip) {
+    return '<span class="' + cls + '"' + (tip ? ' data-tip title="' + esc(tip) + '"' : "") + ">" + esc(text) + "</span>";
+  }
+
+  var RULES = [
+    [/^\/\/.*/, function (m) {
+      var body = esc(m);
+      body = body.replace(/^(\/\/\s*)(Error)(?=\b)/, '$1<span class="flag-err">$2</span>')
+                 .replace(/^(\/\/\s*)(OK)(?=\b)/, '$1<span class="flag-ok">$2</span>');
+      return '<span class="t-com">' + body + "</span>";
+    }],
+    [/^"[^"]*"/, function (m) { return span("t-str", m); }],
+    [/^===/, function (m) { return span("t-def", m, TIPS[m]); }],
+    [/^---/, function (m) { return span("t-task", m, TIPS[m]); }],
+    [/^=\/=/, function (m) { return span("t-q", m, TIPS[m]); }],
+    [/^<-/, function (m) { return span("t-mut", m, TIPS[m]); }],
+    [/^->/, function (m) { return span("t-mut", m, TIPS[m]); }],
+    [/^=>/, function (m) { return span("t-ret", m, TIPS[m]); }],
+    [/^\|:\./, function (m) { return span("t-ret", m, TIPS[m]); }],
+    [/^\|:/, function (m) { return span("t-ret", m, TIPS[m]); }],
+    [/^\|>/, function (m) { return span("t-ret", m, TIPS[m]); }],
+    [/^\|/, function (m) { return span("t-ret", m, TIPS[m]); }],
+    [/^\?/, function (m) { return span("t-q", m, TIPS[m]); }],
+    [/^!/, function (m) { return span("t-q", m, TIPS[m]); }],
+    [/^#[A-Za-z_]*/, function (m) { return span("t-task", m, "# starts a task"); }],
+    [/^\.[a-z][A-Za-z0-9_]*/, function (m, prev) {
+      // .error / .ok are enum cases; a.b is field access
+      return /[A-Za-z0-9_\)\]]$/.test(prev) ? esc(m) : span("t-case", m);
+    }],
+    [/^\d+(\.\d+)?/, function (m) { return span("t-num", m); }],
+    [/^[A-Za-z_][A-Za-z0-9_]*/, function (m, prev, rest) {
+      if (KW[m]) return span("t-kw", m, TIPS[m]);
+      var next = rest.replace(/^\s+/, "");
+      if (/^[A-Z]/.test(m)) {
+        if (next[0] === "(" && !TYPES[m]) return span("t-fn", m);
+        return span("t-type", m);
+      }
+      // lowercase identifier straight after | or |> is an enum case
+      if (/\|>?\s*$/.test(prev) && /^([(:|=]|$)/.test(next) && next.slice(0, 2) !== "==") return span("t-case", m);
+      return esc(m);
+    }]
+  ];
+
+  function highlightLine(line) {
+    var out = "", rest = line, prev = "";
+    while (rest.length) {
+      var hit = false;
+      for (var i = 0; i < RULES.length; i++) {
+        var m = RULES[i][0].exec(rest);
+        if (m) {
+          var tail = rest.slice(m[0].length);
+          out += RULES[i][1](m[0], prev, tail);
+          prev += m[0]; rest = tail; hit = true; break;
+        }
+      }
+      if (!hit) { out += esc(rest[0]); prev += rest[0]; rest = rest.slice(1); }
+    }
+    return out;
+  }
+
+  document.querySelectorAll("pre.q").forEach(function (pre) {
+    var src = pre.textContent.replace(/\s+$/, "");
+    pre.setAttribute("data-src", src);
+    pre.innerHTML = src.split("\n").map(function (line) {
+      var cls = "ln";
+      var c = line.indexOf("//");
+      if (c >= 0) {
+        var note = line.slice(c + 2).trim();
+        if (/^Error\b/.test(note)) cls += " err";
+        else if (/^OK\b/.test(note)) cls += " ok";
+      }
+      return '<span class="' + cls + '">' + (highlightLine(line) || " ") + "</span>";
+    }).join("");
+  });
+
+  // ---------- copy buttons ----------
+  document.querySelectorAll(".code").forEach(function (box) {
+    var pre = box.querySelector("pre.q");
+    if (!pre) return;
+    var bar = box.querySelector(".bar");
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.className = "bar";
+      bar.innerHTML = "<span>quirki</span>";
+      box.insertBefore(bar, pre);
+    }
+    if (bar.querySelector("button")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Copy";
+    btn.addEventListener("click", function () {
+      var text = pre.getAttribute("data-src");
+      var done = function () { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1400); };
+      try {
+        navigator.clipboard.writeText(text).then(done, function () { selectPre(pre); });
+      } catch (e) { selectPre(pre); }
+    });
+    if (box.closest(".hero")) return; // hero bar already holds a hint
+    bar.appendChild(btn);
+  });
+  function selectPre(pre) {
+    var r = document.createRange(); r.selectNodeContents(pre);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+
+  // ---------- chapter rail scroll-spy ----------
+  var links = Array.prototype.slice.call(document.querySelectorAll(".rail ol a"));
+  var map = {};
+  links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
+  if ("IntersectionObserver" in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove("active"); });
+          var a = map[en.target.id]; if (a) a.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    document.querySelectorAll(".chapter").forEach(function (c) { obs.observe(c); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+._*
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Env / secrets
+.env
+.env.*
+
+# Node (in case of tooling later)
+node_modules/
+
+# Logs
+*.log
+
+# Claude Code local settings
+.claude/
